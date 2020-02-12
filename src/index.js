@@ -36,34 +36,13 @@ const point = function(x, y) {
         return CANVAS_CENTER.posX + this.x;
     };
     that.getY =function () {
-        return CANVAS_CENTER.posY + this.y;
+        return CANVAS_CENTER.posY - this.y;
     };
-    that.isPacWithin = function(pointOrigin, pac) {
-        let canMove = false;
-        const distX = this.x - pointOrigin.x;
-        const distY = this.y - pointOrigin.y;
-        if (distY === 0) {
-            if (pac.posX < distX) {
-                canMove = true;
-            }
-        }
-        if (distX === 0) {
-            if (pac.posY < distY) {
-                canMove = true;
-            }
-        }
-    }
     that.init(x, y);
     return that;
 };
 
 const parcours = {
-    layout2: [
-        [point(0, 0), point(50, 0)],
-        [point(50, 0), point(50, 30)],
-        [point(50, 0), point(50, -30)],
-        [point(50, 30), point(20, 30)]
-    ],
     layout: [
         [point(0, 0), point(-50, 0)],
         [point(0, 0), point(0, 70)],
@@ -71,9 +50,11 @@ const parcours = {
         [point(0, 0), point(50, 0)],
         [point(50, 0), point(50, 30)],
         [point(50, 0), point(50, -30)],
-        [point(50, 30), point(20, 30)]
+        [point(20, 30), point(50, 30)] // [point(50, 30), point(20, 30)] need strating point < ending point
     ],
-    isIn: function(x, y) {
+    isOnTrack: function(position) {
+        const x = position.posX;
+        const y = position.posY;
         let within = false;
         for (let i = 0; i < this.layout.length; i++) {
             const condX = x > 0 ? x >= this.layout[i][0].x && x <= this.layout[i][1].x
@@ -89,11 +70,11 @@ const parcours = {
         return within;
     },
     display: function(context) {
-        for (let i = 0; i < this.layout.length; i++) {
-            context.moveTo(this.layout[i][0].getX(), this.layout[i][0].getY());
-            context.lineTo(this.layout[i][1].getX(), this.layout[i][1].getY());
+        this.layout.forEach(line => {
+            context.moveTo(line[0].getX(), line[0].getY());
+            context.lineTo(line[1].getX(), line[1].getY());
             context.stroke();
-        }
+        });
     }
 }
 
@@ -106,20 +87,6 @@ const getPac = function (context) {
     const PAC_WIDTH = 10;
     const PAC_HEIGHT = 10;
 
-    const isXinCanvasAndOnParours = function(posX, posY, parcours) {
-        let rc = false;
-        if (posX > CANVAS_WIDTH_ORIG && posX < CANVAS_WIDTH) {
-            relative = getRelativePosition( {
-                posX: posX,
-                posY: posY
-            });
-            if (parcours.isIn(relative.posX, relative.posY)) {
-                rc = true;
-            }
-        }
-        return rc;
-    };
-
     const getRelativePosition = function( position) {
         const relativePosition = {
             posX: (position.posX + (PAC_WIDTH / 2))- (CANVAS_WIDTH - CANVAS_WIDTH_ORIG) / 2,
@@ -128,41 +95,60 @@ const getPac = function (context) {
         return relativePosition;
     };
 
-    const setPosition = function (that, direction, parcours) {
+    const isInCanvasWidth = function(posX) {
+        return posX > CANVAS_WIDTH_ORIG && posX < CANVAS_WIDTH;
+    };
+
+    const canMoveHorizontally = function(posX, posY, parcours) {
+        if (isInCanvasWidth(posX)) {
+            return parcours.isOnTrack(getRelativePosition( {
+                posX: posX,
+                posY: posY
+            }));
+        }
+        return false;
+    };
+
+    const isInCanvasHeight = function(posY) {
+        return posY > CANVAS_HEIGHT_ORIG && posY < CANVAS_HEIGHT;
+    };
+
+    const canMoveVertically = function(posX, posY, parcours) {
+        if (isInCanvasHeight(posY)) {
+            return parcours.isOnTrack(getRelativePosition( {
+                posX: posX,
+                posY: posY
+            }));
+        }
+        return false;
+    };
+
+    const isMoveValid = function (that, direction, parcours) {
         let isNewPosition = false;
         switch (direction) {
             case LEFT:
-                const posX = that.posX - INC;
-                if (isXinCanvasAndOnParours(posX, that.posY, parcours)) {
-                    that.posX = posX;
+                if (canMoveHorizontally(that.posX - INC, that.posY, parcours)) {
+                    that.posX -= INC;
                     isNewPosition = true;
                 }
-                // if (that.posX - INC > CANVAS_WIDTH_ORIG) {
-                //     that.posX -= INC;
-                //     isNewPosition = true;
-                // }
                 break;
 
             case UP:
-                if (that.posY - INC > CANVAS_HEIGHT_ORIG) {
+                if (canMoveVertically(that.posX, that.posY - INC, parcours)) {
                     that.posY -= INC;
                     isNewPosition = true;
                 }
                 break;
 
             case RIGHT:
-                if (isXinCanvasAndOnParours(that.posX + INC, that.posY, parcours)) {
-                    that.posX = that.posX + INC;
+                if (canMoveHorizontally(that.posX + INC, that.posY, parcours)) {
+                    that.posX += INC;
                     isNewPosition = true;
                 }
-                // if (that.posX + INC < CANVAS_WIDTH - PAC_WIDTH) {
-                //     that.posX += INC;
-                //     isNewPosition = true;
-                // }
                 break;
 
             case DOWN:
-                if (that.posY + INC < CANVAS_HEIGHT - PAC_HEIGHT) {
+                if (canMoveVertically(that.posX, that.posY + INC, parcours)) {
                     that.posY += INC;
                     isNewPosition = true;
                 }
@@ -192,7 +178,7 @@ const getPac = function (context) {
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             const that = this;
-            if (setPosition(that, direction, parcours)) {
+            if (isMoveValid(that, direction, parcours)) {
                 context.fillStyle = PAC_COLOR;
                 context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
                 context.fillStyle = BACKGROUND;
