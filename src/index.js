@@ -65,14 +65,29 @@ const parcours = {
         [point(50, 30), point(20, 30)]
     ],
     layout: [
+        [point(0, 0), point(-50, 0)],
         [point(0, 0), point(0, 70)],
         [point(0, 0), point(0, -70)],
         [point(0, 0), point(50, 0)],
-        [point(0, 0), point(-50, 0)],
         [point(50, 0), point(50, 30)],
         [point(50, 0), point(50, -30)],
         [point(50, 30), point(20, 30)]
     ],
+    isIn: function(x, y) {
+        let within = false;
+        for (let i = 0; i < this.layout.length; i++) {
+            const condX = x > 0 ? x >= this.layout[i][0].x && x <= this.layout[i][1].x
+                                : x <= this.layout[i][0].x && x >= this.layout[i][1].x;
+            const condY = y > 0 ? y >= this.layout[i][0].y && y <= this.layout[i][1].y
+                                : y <= this.layout[i][0].y && y >= this.layout[i][1].y;
+
+            if (condX && condY) {
+                within = true;
+                break;
+            }
+        };
+        return within;
+    },
     display: function(context) {
         for (let i = 0; i < this.layout.length; i++) {
             context.moveTo(this.layout[i][0].getX(), this.layout[i][0].getY());
@@ -91,14 +106,41 @@ const getPac = function (context) {
     const PAC_WIDTH = 10;
     const PAC_HEIGHT = 10;
 
-    const setPosition = function (that, direction) {
+    const isXinCanvasAndOnParours = function(posX, posY, parcours) {
+        let rc = false;
+        if (posX > CANVAS_WIDTH_ORIG && posX < CANVAS_WIDTH) {
+            relative = getRelativePosition( {
+                posX: posX,
+                posY: posY
+            });
+            if (parcours.isIn(relative.posX, relative.posY)) {
+                rc = true;
+            }
+        }
+        return rc;
+    };
+
+    const getRelativePosition = function( position) {
+        const relativePosition = {
+            posX: (position.posX + (PAC_WIDTH / 2))- (CANVAS_WIDTH - CANVAS_WIDTH_ORIG) / 2,
+            posY: ((CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG) / 2) - (position.posY + (PAC_HEIGHT / 2))
+        }
+        return relativePosition;
+    };
+
+    const setPosition = function (that, direction, parcours) {
         let isNewPosition = false;
         switch (direction) {
             case LEFT:
-                if (that.posX - INC > CANVAS_WIDTH_ORIG) {
-                    that.posX -= INC;
+                const posX = that.posX - INC;
+                if (isXinCanvasAndOnParours(posX, that.posY, parcours)) {
+                    that.posX = posX;
                     isNewPosition = true;
                 }
+                // if (that.posX - INC > CANVAS_WIDTH_ORIG) {
+                //     that.posX -= INC;
+                //     isNewPosition = true;
+                // }
                 break;
 
             case UP:
@@ -109,10 +151,14 @@ const getPac = function (context) {
                 break;
 
             case RIGHT:
-                if (that.posX + INC < CANVAS_WIDTH - PAC_WIDTH) {
-                    that.posX += INC;
+                if (isXinCanvasAndOnParours(that.posX + INC, that.posY, parcours)) {
+                    that.posX = that.posX + INC;
                     isNewPosition = true;
                 }
+                // if (that.posX + INC < CANVAS_WIDTH - PAC_WIDTH) {
+                //     that.posX += INC;
+                //     isNewPosition = true;
+                // }
                 break;
 
             case DOWN:
@@ -141,12 +187,12 @@ const getPac = function (context) {
             context.fillStyle = PAC_COLOR;
             context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
         },
-        move: function (event) {
+        move: function (event, parcours) {
             const direction = event.keyCode;
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             const that = this;
-            if (setPosition(that, direction)) {
+            if (setPosition(that, direction, parcours)) {
                 context.fillStyle = PAC_COLOR;
                 context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
                 context.fillStyle = BACKGROUND;
