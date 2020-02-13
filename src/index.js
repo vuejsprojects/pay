@@ -232,6 +232,10 @@ const getPac = function (context) {
     };
 
     return {
+        LEFT: LEFT,
+        RIGHT: RIGHT,
+        UP: UP,
+        DOWN: DOWN,
         posX: 0,
         posY: 0,
         initialPosition: function (position) {
@@ -250,6 +254,10 @@ const getPac = function (context) {
             if (isMoveValid(wishedPosition, parcours)) {
                 this.setNewPosition(wishedPosition);
                 this.draw();
+                return true;
+            }
+            else {
+                return false;
             }
         },
         setNewPosition: function(newPosition) {
@@ -265,6 +273,80 @@ const getPac = function (context) {
     }
 }
 
+const getBeast = function(context) {
+
+    const beast = getPac(context);
+
+    const randomWalk = function(axis) {
+        const ra = Math.floor(Math.random() * 2);
+        console.log(ra);
+        if( ra === 0) {
+            return (axis === VERTICAL) ? beast.DOWN : beast.LEFT;
+        }
+        else {
+            return (axis === VERTICAL) ? beast.UP : beast.RIGHT;
+        }
+    };
+
+    beast.chooseLine = function(parcours) {
+        this.walkingLine = parcours.layout[
+            Math.floor(Math.random() * parcours.layout.length)
+        ];
+    };
+    beast.walkTheLine = function() {
+        if (this.walkingLine.start.x == this.walkingLine.end.x) {
+            // walk UP or DOWN
+            if (this.lastMove) {
+                moved = this.move({keyCode: this.lastMove}, parcours);
+            }
+            else {
+                if (randomWalk(VERTICAL) === this.UP) {
+                    moved = this.move({keyCode: this.UP}, parcours);
+                    this.lastMove = this.UP;
+                }
+                else {
+                    moved = this.move({keyCode: this.DOWN}, parcours);
+                    this.lastMove = this.DOWN;
+                }
+            }
+            if (!moved) {
+                // somehow find the new walkingline where I got. If none go to oposite direction
+                const horizontal = randomWalk(HORIZONTAL);
+                this.move({keyCode: horizontal}, parcours);
+                this.lastMove = horizontal;
+            }
+        }
+        else {
+            // walk right or LEFT
+            if (this.lastMove) {
+                moved = this.move({keyCode: this.lastMove}, parcours);
+            }
+            else {
+                if (randomWalk(HORIZONTAL) === this.RIGHT) {
+                    moved = this.move({keyCode: this.RIGHT}, parcours);
+                    this.lastMove = this.RIGHT;
+                }
+                else {
+                    moved = this.move({keyCode: this.LEFT}, parcours);
+                    this.lastMove = this.LEFT;
+                }
+            }
+            if (!moved) {
+                const vertical = randomWalk(VERTICAL);
+                this.move({keyCode: vertical}, parcours);
+                this.lastMove = vertical;
+            }
+        }
+    };
+    beast.fromUpperLeftCorner = function(point) {
+        return {
+            posX: point.getX(),
+            posY: point.getY()
+        }
+    };
+    return beast;
+};
+
 const getKeypressHandler = function (pac, parcours) {
     const func = function () {
         pac.move(event, parcours);
@@ -279,21 +361,18 @@ parcours.display(context);
 pac.initialPosition(CANVAS_CENTER);
 
 const beasts = [
-    {
-        monster: getPac(context),
-        monsterPosition: {
-            posX: 390,
-            posY: 10
-        }
-    }
+    getBeast(context)
 ];
 beasts.forEach(beast => {
-    beast.monster.initialPosition(beast.monsterPosition);
+    beast.chooseLine(parcours);
+    beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));
 });
 
 setInterval(function() {
-
-},2);
+    beasts.forEach(beast => {
+        beast.walkTheLine();
+    });
+},50);
 
 
 const keypressHandler = getKeypressHandler(pac, parcours);
