@@ -47,8 +47,19 @@ const point = function(x, y) {
 
 const parcours = {
     layout: [
-        [point(0, 0), point(0, 70)],
-        [point(0, 0), point(50, 0)],
+        [point(0, 0), point(0, 190)],
+        [point(0, 190), point(190, 190)],
+        [point(190, 0), point(190, 190)],
+        // vertical to upper right
+        [point(150, 120), point(150, 190)],
+        // crossroad
+        [point(100, 120), point(190, 120)],
+        [point(100, 120), point(100, 190)],
+        [point(0, 120), point(100, 120)],
+        [point(100, 20), point(100, 120)],
+        // horizontal in crossroad
+        [point(40, 80), point(160, 80)],
+        [point(0, 0), point(190, 0)],
         [point(50, 0), point(50, 30)],
         [point(0, 30), point(50, 30)], // [point(50, 30), point(20, 30)] need strating point < ending point
         // [point(0, 0), point(-50, 0)],
