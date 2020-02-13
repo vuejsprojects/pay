@@ -5,7 +5,8 @@ const CANVAS_HEIGHT = 400;
 const BACKGROUND = 'blue';
 const PAC_COLOR = 'white';
 const LINE_WIDTH = 10;
-const LINE_COLOR = 'orange'
+const LINE_COLOR = 'orange';
+const BORDER_COLOR = 'red';
 const HORIZONTAL = 0;
 const VERTICAL = 1;
 
@@ -72,10 +73,40 @@ const parcours = {
         return within;
     },
     display: function(context) {
+        this.drawBorders(context);
+        context.beginPath();
+        context.strokeStyle = LINE_COLOR;
         this.layout.forEach(line => {
             context.moveTo(line[0].getX(), line[0].getY());
             context.lineTo(line[1].getX(), line[1].getY());
             context.stroke();
+        });
+    },
+    drawBorders: function(context) {
+        context.beginPath();
+        context.strokeStyle = BORDER_COLOR;
+        context.lineWidth = LINE_WIDTH;
+        this.layout.forEach(line => {
+            if (line[0].getY() === line[1].getY()) {
+                // horizontal borders
+                context.moveTo(line[0].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[0].getY() - LINE_WIDTH);
+                context.lineTo(line[1].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[1].getY() - LINE_WIDTH);
+
+                context.moveTo(line[0].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[0].getY() + LINE_WIDTH);
+                context.lineTo(line[1].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[1].getY() + LINE_WIDTH);
+                context.stroke();
+            }
+            else {
+                // vertical border
+                // context.moveTo(line[0].getX() - LINE_WIDTH, line[0].getY() + (line[0].y > 0) ? (LINE_WIDTH / - 2) : (LINE_WIDTH / 2));
+                // context.lineTo(line[1].getX() - LINE_WIDTH, line[1].getY() + (line[0].y > 0) ? (LINE_WIDTH / - 2) : (LINE_WIDTH / 2));
+                context.moveTo(line[0].getX() - LINE_WIDTH, line[0].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.lineTo(line[1].getX() - LINE_WIDTH, line[1].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+
+                context.moveTo(line[0].getX() + LINE_WIDTH, line[0].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.lineTo(line[1].getX() + LINE_WIDTH, line[1].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.stroke();
+            }
         });
     }
 }
