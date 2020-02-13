@@ -146,19 +146,19 @@ const getPac = function (context) {
         }
 
     };
-    const centerPacCoordinate = function(coordinate) {
+    const centerPacCoordinates = function(coordinates) {
         const center = {
-            posX: coordinate.posX - (PAC_WIDTH / 2),
-            posY: coordinate.posY - (PAC_HEIGHT / 2)
+            posX: coordinates.posX - (PAC_WIDTH / 2),
+            posY: coordinates.posY - (PAC_HEIGHT / 2)
         }
         return center
     };
-    
+
     return {
         posX: 0,
         posY: 0,
         initialPosition: function (spec) {
-            center = centerPacCoordinate(spec);
+            center = centerPacCoordinates(spec);
             this.posX = center.posX;
             this.posY = center.posY;
             context.fillStyle = PAC_COLOR;
@@ -173,11 +173,14 @@ const getPac = function (context) {
             if (isMoveValid(wishedPosition, parcours)) {
                 this.posX = wishedPosition.position.posX;
                 this.posY = wishedPosition.position.posY;
-                context.fillStyle = PAC_COLOR;
-                context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
-                context.fillStyle = BACKGROUND;
-                context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
+                this.draw();
             }
+        },
+        draw: function() {
+            context.fillStyle = PAC_COLOR;
+            context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+            context.fillStyle = BACKGROUND;
+            context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
         }
     }
 }
