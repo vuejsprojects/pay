@@ -53,7 +53,7 @@ const line = function(start, end) {
 };
 
 const parcours = {
-    betterLayout: [
+    layout: [
         line(point(0, 0), point(0, 190)),
         line(point(0, 190), point(190, 190)),
         line(point(190, 0), point(190, 190)),
@@ -65,54 +65,18 @@ const parcours = {
         line(point(40, 80), point(160, 80)),
         line(point(0, 0), point(190, 0)),
         line(point(50, 0), point(50, 30)),
-        line(point(0, 30), point(50, 30)),
-    ],
-    layout: [
-        // upper right
-        [point(0, 0), point(0, 190)],
-        [point(0, 190), point(190, 190)],
-        [point(190, 0), point(190, 190)],
-        // vertical to upper right
-        [point(150, 120), point(150, 190)],
-        // crossroad
-        [point(100, 120), point(190, 120)],
-        [point(100, 120), point(100, 190)],
-        [point(0, 120), point(100, 120)],
-        [point(100, 20), point(100, 120)],
-        // horizontal in crossroad
-        [point(40, 80), point(160, 80)],
-        [point(0, 0), point(190, 0)],
-        [point(50, 0), point(50, 30)],
-        [point(0, 30), point(50, 30)] // [point(50, 30), point(20, 30)] need strating point < ending point
-
-
-        // // lower right
-        // [point(0, 0), point(0, -190)],
-        // [point(0, -190), point(190, -190)],
-        // [point(190, 0), point(190, -190)],
-        // // vertical to lower right
-        // [point(150, -120), point(150, -1190)],
-        // // crossroad
-        // [point(100, -120), point(190, -120)],
-        // [point(100, -120), point(100, -190)],
-        // [point(0, -120), point(100, -120)],
-        // [point(100, -20), point(100, -120)],
-        // // horizontal in crossroad
-        // [point(40, -80), point(160, -80)],
-        // [point(0, 0), point(190, 0)],
-        // [point(50, 0), point(50, -30)],
-        // [point(0, -30), point(50, -30)], // [point(50, 30), point(20, 30)] need strating point < ending point
+        line(point(0, 30), point(50, 30))
     ],
     build: function() {
-        const mirrorPoints = function(line) {
+        const mirrorPoints = function(aLine) {
             return [
-                [point(line[0].x, -line[0].y), point(line[1].x, -line[1].y)],
-                [point(-line[0].x, -line[0].y), point(-line[1].x, -line[1].y)],
-                [point(-line[0].x, line[0].y), point(-line[1].x, line[1].y)],
+                line(point(aLine.start.x, -aLine.start.y), point(aLine.end.x, -aLine.end.y)),
+                line(point(-aLine.start.x, -aLine.start.y), point(-aLine.end.x, -aLine.end.y)),
+                line(point(-aLine.start.x, aLine.start.y), point(-aLine.end.x, aLine.end.y))
             ];
         }
         const layoutLen = this.layout.length;
-        for (let i=0; i< layoutLen; i++) {
+        for (let i = 0; i < layoutLen; i++) {
             this.layout.push.apply(this.layout, mirrorPoints(this.layout[i]));
         }
     },
@@ -121,10 +85,10 @@ const parcours = {
         const y = position.posY;
         let within = false;
         for (let i = 0; i < this.layout.length; i++) {
-            const condX = x >= 0 ? x >= this.layout[i][0].x && x <= this.layout[i][1].x
-                                : x <= this.layout[i][0].x && x >= this.layout[i][1].x;
-            const condY = y >= 0 ? y >= this.layout[i][0].y && y <= this.layout[i][1].y
-                                : y <= this.layout[i][0].y && y >= this.layout[i][1].y;
+            const condX = x >= 0 ? x >= this.layout[i].start.x && x <= this.layout[i].end.x
+                                : x <= this.layout[i].start.x && x >= this.layout[i].end.x;
+            const condY = y >= 0 ? y >= this.layout[i].start.y && y <= this.layout[i].end.y
+                                : y <= this.layout[i].start.y && y >= this.layout[i].end.y;
 
             if (condX && condY) {
                 within = true;
@@ -140,8 +104,8 @@ const parcours = {
         context.setLineDash([2,2]);
         context.strokeStyle = LINE_COLOR;
         this.layout.forEach(line => {
-            context.moveTo(line[0].getX(), line[0].getY());
-            context.lineTo(line[1].getX(), line[1].getY());
+            context.moveTo(line.start.getX(), line.start.getY());
+            context.lineTo(line.end.getX(), line.end.getY());
             context.stroke();
         });
     },
@@ -152,16 +116,16 @@ const parcours = {
             context.lineWidth = LINE_WIDTH;
             context.setLineDash([]);
             context.strokeStyle = 'green';
-            context.moveTo(line[0].getX(), line[0].getY());
-            context.lineTo(line[1].getX(), line[1].getY());
+            context.moveTo(line.start.getX(), line.start.getY());
+            context.lineTo(line.end.getX(), line.end.getY());
             context.stroke();
 
             context.beginPath();
             context.lineWidth = 2;
             context.setLineDash([2,2]);
             context.strokeStyle = LINE_COLOR;
-            context.moveTo(line[0].getX(), line[0].getY());
-            context.lineTo(line[1].getX(), line[1].getY());
+            context.moveTo(line.start.getX(), line.start.getY());
+            context.lineTo(line.end.getX(), line.end.getY());
             context.stroke();
         });
     },
@@ -170,24 +134,23 @@ const parcours = {
         context.strokeStyle = BORDER_COLOR;
         context.lineWidth = LINE_WIDTH;
         this.layout.forEach(line => {
-            if (line[0].getY() === line[1].getY()) {
+            console.log(line);
+            if (line.start.getY() === line.end.getY()) {
                 // horizontal borders
-                context.moveTo(line[0].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[0].getY() - LINE_WIDTH);
-                context.lineTo(line[1].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[1].getY() - LINE_WIDTH);
+                context.moveTo(line.start.getX() + ((line.end.x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line.start.getY() - LINE_WIDTH);
+                context.lineTo(line.end.getX() + ((line.end.x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line.end.getY() - LINE_WIDTH);
 
-                context.moveTo(line[0].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[0].getY() + LINE_WIDTH);
-                context.lineTo(line[1].getX() + ((line[1].x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line[1].getY() + LINE_WIDTH);
+                context.moveTo(line.start.getX() + ((line.end.x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line.start.getY() + LINE_WIDTH);
+                context.lineTo(line.end.getX() + ((line.end.x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line.end.getY() + LINE_WIDTH);
                 context.stroke();
             }
             else {
                 // vertical border
-                // context.moveTo(line[0].getX() - LINE_WIDTH, line[0].getY() + (line[0].y > 0) ? (LINE_WIDTH / - 2) : (LINE_WIDTH / 2));
-                // context.lineTo(line[1].getX() - LINE_WIDTH, line[1].getY() + (line[0].y > 0) ? (LINE_WIDTH / - 2) : (LINE_WIDTH / 2));
-                context.moveTo(line[0].getX() - LINE_WIDTH, line[0].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
-                context.lineTo(line[1].getX() - LINE_WIDTH, line[1].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.moveTo(line.start.getX() - LINE_WIDTH, line.start.getY() + ((line.end.y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.lineTo(line.end.getX() - LINE_WIDTH, line.end.getY() + ((line.end.y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
 
-                context.moveTo(line[0].getX() + LINE_WIDTH, line[0].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
-                context.lineTo(line[1].getX() + LINE_WIDTH, line[1].getY() + ((line[1].y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.moveTo(line.start.getX() + LINE_WIDTH, line.start.getY() + ((line.end.y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
+                context.lineTo(line.end.getX() + LINE_WIDTH, line.end.getY() + ((line.end.y > 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2));
                 context.stroke();
             }
         });
@@ -271,8 +234,8 @@ const getPac = function (context) {
     return {
         posX: 0,
         posY: 0,
-        initialPosition: function (spec) {
-            center = centerPacCoordinates(spec);
+        initialPosition: function (position) {
+            center = centerPacCoordinates(position);
             this.posX = center.posX;
             this.posY = center.posY;
             context.fillStyle = PAC_COLOR;
@@ -314,6 +277,24 @@ const pac = getPac(context);
 parcours.build();
 parcours.display(context);
 pac.initialPosition(CANVAS_CENTER);
+
+const beasts = [
+    {
+        monster: getPac(context),
+        monsterPosition: {
+            posX: 390,
+            posY: 10
+        }
+    }
+];
+beasts.forEach(beast => {
+    beast.monster.initialPosition(beast.monsterPosition);
+});
+
+setInterval(function() {
+
+},2);
+
 
 const keypressHandler = getKeypressHandler(pac, parcours);
 
