@@ -45,7 +45,28 @@ const point = function(x, y) {
     return that;
 };
 
+const line = function(start, end) {
+    return {
+        start: start,
+        end: end
+    }
+};
+
 const parcours = {
+    betterLayout: [
+        line(point(0, 0), point(0, 190)),
+        line(point(0, 190), point(190, 190)),
+        line(point(190, 0), point(190, 190)),
+        line(point(150, 120), point(150, 190)),
+        line(point(100, 120), point(190, 120)),
+        line(point(100, 120), point(100, 190)),
+        line(point(0, 120), point(100, 120)),
+        line(point(100, 20), point(100, 120)),
+        line(point(40, 80), point(160, 80)),
+        line(point(0, 0), point(190, 0)),
+        line(point(50, 0), point(50, 30)),
+        line(point(0, 30), point(50, 30)),
+    ],
     layout: [
         // upper right
         [point(0, 0), point(0, 190)],
@@ -112,11 +133,33 @@ const parcours = {
         };
         return within;
     },
-    display: function(context) {
-        this.drawBorders(context);
+    displayToFix: function(context) {
+        this.drawBorders(context); // need to fix the border and remove the fudge in display(): tip see pb by not showing parcours
         context.beginPath();
+        context.lineWidth = 2
+        context.setLineDash([2,2]);
         context.strokeStyle = LINE_COLOR;
         this.layout.forEach(line => {
+            context.moveTo(line[0].getX(), line[0].getY());
+            context.lineTo(line[1].getX(), line[1].getY());
+            context.stroke();
+        });
+    },
+    display: function(context) {
+        this.drawBorders(context);
+        this.layout.forEach(line => {
+            context.beginPath();
+            context.lineWidth = LINE_WIDTH;
+            context.setLineDash([]);
+            context.strokeStyle = 'green';
+            context.moveTo(line[0].getX(), line[0].getY());
+            context.lineTo(line[1].getX(), line[1].getY());
+            context.stroke();
+
+            context.beginPath();
+            context.lineWidth = 2;
+            context.setLineDash([2,2]);
+            context.strokeStyle = LINE_COLOR;
             context.moveTo(line[0].getX(), line[0].getY());
             context.lineTo(line[1].getX(), line[1].getY());
             context.stroke();
@@ -268,9 +311,9 @@ const getKeypressHandler = function (pac, parcours) {
 
 const context = intCanvas();
 const pac = getPac(context);
-pac.initialPosition(CANVAS_CENTER);
 parcours.build();
 parcours.display(context);
+pac.initialPosition(CANVAS_CENTER);
 
 const keypressHandler = getKeypressHandler(pac, parcours);
 
