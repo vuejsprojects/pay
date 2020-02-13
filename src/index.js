@@ -47,22 +47,22 @@ const point = function(x, y) {
 
 const parcours = {
     layout: [
-        [point(0, 0), point(-50, 0)],
         [point(0, 0), point(0, 70)],
-        [point(0, 0), point(0, -70)],
         [point(0, 0), point(50, 0)],
         [point(50, 0), point(50, 30)],
-        [point(50, 0), point(50, -30)],
-        [point(20, 30), point(50, 30)] // [point(50, 30), point(20, 30)] need strating point < ending point
+        [point(0, 30), point(50, 30)], // [point(50, 30), point(20, 30)] need strating point < ending point
+        // [point(0, 0), point(-50, 0)],
+        // [point(0, 0), point(0, -70)],
+        // [point(50, 0), point(50, -30)],
     ],
     isOnTrack: function(position) {
         const x = position.posX;
         const y = position.posY;
         let within = false;
         for (let i = 0; i < this.layout.length; i++) {
-            const condX = x > 0 ? x >= this.layout[i][0].x && x <= this.layout[i][1].x
+            const condX = x >= 0 ? x >= this.layout[i][0].x && x <= this.layout[i][1].x
                                 : x <= this.layout[i][0].x && x >= this.layout[i][1].x;
-            const condY = y > 0 ? y >= this.layout[i][0].y && y <= this.layout[i][1].y
+            const condY = y >= 0 ? y >= this.layout[i][0].y && y <= this.layout[i][1].y
                                 : y <= this.layout[i][0].y && y >= this.layout[i][1].y;
 
             if (condX && condY) {
