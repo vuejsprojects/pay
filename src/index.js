@@ -101,11 +101,11 @@ const getPac = function (context) {
         return posX > CANVAS_WIDTH_ORIG && posX < CANVAS_WIDTH;
     };
 
-    const canMoveHorizontally = function(posX, posY, parcours) {
-        if (isInCanvasWidth(posX)) {
+    const canMoveHorizontally = function(position, parcours) {
+        if (isInCanvasWidth(position.posX)) {
             return parcours.isOnTrack(getRelativePosition( {
-                posX: posX,
-                posY: posY
+                posX: position.posX,
+                posY: position.posY
             }));
         }
         return false;
@@ -115,11 +115,11 @@ const getPac = function (context) {
         return posY > CANVAS_HEIGHT_ORIG && posY < CANVAS_HEIGHT;
     };
 
-    const canMoveVertically = function(posX, posY, parcours) {
-        if (isInCanvasHeight(posY)) {
+    const canMoveVertically = function(position, parcours) {
+        if (isInCanvasHeight(position.posY)) {
             return parcours.isOnTrack(getRelativePosition( {
-                posX: posX,
-                posY: posY
+                posX: position.posX,
+                posY: position.posY
             }));
         }
         return false;
@@ -127,16 +127,16 @@ const getPac = function (context) {
 
     const isMoveValid = function (wishedPosition, parcours) {
         if (wishedPosition.axis === HORIZONTAL) {
-            return canMoveHorizontally(wishedPosition.position.posX, wishedPosition.position.posY, parcours);
+            return canMoveHorizontally(wishedPosition.position, parcours);
         }
         else {
-            return canMoveVertically(wishedPosition.position.posX, wishedPosition.position.posY, parcours);
+            return canMoveVertically(wishedPosition.position, parcours);
         }
     };
-    const getWishedPosition = function(that, direction) {
+    const getWishedPosition = function(currentPosition, direction) {
         const axis = (direction === LEFT || direction === RIGHT) ? HORIZONTAL : VERTICAL;
-        const newPosX = (direction === LEFT) ? that.posX - INC : (direction === RIGHT) ? that.posX + INC : that.posX;
-        const newPosY = (direction === UP) ? that.posY - INC : (direction === DOWN) ? that.posY + INC : that.posY;
+        const newPosX = (direction === LEFT) ? currentPosition.posX - INC : (direction === RIGHT) ? currentPosition.posX + INC : currentPosition.posX;
+        const newPosY = (direction === UP) ? currentPosition.posY - INC : (direction === DOWN) ? currentPosition.posY + INC : currentPosition.posY;
         return {
             axis: axis,
             position: {
@@ -171,11 +171,14 @@ const getPac = function (context) {
             const that = this;
             const wishedPosition = getWishedPosition(that, direction);
             if (isMoveValid(wishedPosition, parcours)) {
-                this.posX = wishedPosition.position.posX;
-                this.posY = wishedPosition.position.posY;
+                this.setNewPosition(wishedPosition);
                 this.draw();
             }
         },
+        setNewPosition: function(newPosition) {
+            this.posX = newPosition.position.posX;
+            this.posY = newPosition.position.posY;
+    },
         draw: function() {
             context.fillStyle = PAC_COLOR;
             context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
