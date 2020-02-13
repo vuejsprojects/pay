@@ -47,6 +47,7 @@ const point = function(x, y) {
 
 const parcours = {
     layout: [
+        // upper right
         [point(0, 0), point(0, 190)],
         [point(0, 190), point(190, 190)],
         [point(190, 0), point(190, 190)],
@@ -61,11 +62,39 @@ const parcours = {
         [point(40, 80), point(160, 80)],
         [point(0, 0), point(190, 0)],
         [point(50, 0), point(50, 30)],
-        [point(0, 30), point(50, 30)], // [point(50, 30), point(20, 30)] need strating point < ending point
-        // [point(0, 0), point(-50, 0)],
-        // [point(0, 0), point(0, -70)],
+        [point(0, 30), point(50, 30)] // [point(50, 30), point(20, 30)] need strating point < ending point
+
+
+        // // lower right
+        // [point(0, 0), point(0, -190)],
+        // [point(0, -190), point(190, -190)],
+        // [point(190, 0), point(190, -190)],
+        // // vertical to lower right
+        // [point(150, -120), point(150, -1190)],
+        // // crossroad
+        // [point(100, -120), point(190, -120)],
+        // [point(100, -120), point(100, -190)],
+        // [point(0, -120), point(100, -120)],
+        // [point(100, -20), point(100, -120)],
+        // // horizontal in crossroad
+        // [point(40, -80), point(160, -80)],
+        // [point(0, 0), point(190, 0)],
         // [point(50, 0), point(50, -30)],
+        // [point(0, -30), point(50, -30)], // [point(50, 30), point(20, 30)] need strating point < ending point
     ],
+    build: function() {
+        const mirrorPoints = function(line) {
+            return [
+                [point(line[0].x, -line[0].y), point(line[1].x, -line[1].y)],
+                [point(-line[0].x, -line[0].y), point(-line[1].x, -line[1].y)],
+                [point(-line[0].x, line[0].y), point(-line[1].x, line[1].y)],
+            ];
+        }
+        const layoutLen = this.layout.length;
+        for (let i=0; i< layoutLen; i++) {
+            this.layout.push.apply(this.layout, mirrorPoints(this.layout[i]));
+        }
+    },
     isOnTrack: function(position) {
         const x = position.posX;
         const y = position.posY;
@@ -240,6 +269,7 @@ const getKeypressHandler = function (pac, parcours) {
 const context = intCanvas();
 const pac = getPac(context);
 pac.initialPosition(CANVAS_CENTER);
+parcours.build();
 parcours.display(context);
 
 const keypressHandler = getKeypressHandler(pac, parcours);
