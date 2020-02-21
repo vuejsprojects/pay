@@ -71,9 +71,14 @@ const getBeast = function(context) {
     beast.isTimeToChangeDirection = isTimeToChangeDirection();
 
     beast.chooseLine = function(parcours) {
-        this.walkingLine = parcours.layout[
-            Math.floor(Math.random() * parcours.layout.length)
-        ];
+        while (true) {
+            this.walkingLine = parcours.layout[
+                Math.floor(Math.random() * parcours.layout.length)
+            ];
+            if (!this.walkingLine.noBeastStart) {
+                return;
+            }
+        }
     };
 
     beast.walkTheLine = function() {

@@ -5,16 +5,17 @@ import {
     LINE_COLOR
 } from './settings.js';
 
-const line = function(start, end) {
+const line = function(start, end, nobeast) {
     return {
         start: start,
-        end: end
+        end: end,
+        noBeastStart: nobeast  // a beast can't appear on this line
     }
 };
 
 const parcours = {
     layout: [
-        line(point(0, 0), point(0, 190)),
+        line(point(0, 0), point(0, 190), true),
         line(point(0, 190), point(190, 190)),
         line(point(190, 0), point(190, 190)),
         line(point(150, 120), point(150, 190)),
@@ -23,16 +24,16 @@ const parcours = {
         line(point(0, 120), point(100, 120)),
         line(point(100, 20), point(100, 120)),
         line(point(40, 80), point(160, 80)),
-        line(point(0, 0), point(190, 0)),
+        line(point(0, 0), point(190, 0), true),
         line(point(50, 0), point(50, 30)),
         line(point(0, 30), point(50, 30))
     ],
     build: function() {
         const mirrorPoints = function(aLine) {
             return [
-                line(point(aLine.start.x, -aLine.start.y), point(aLine.end.x, -aLine.end.y)),
-                line(point(-aLine.start.x, -aLine.start.y), point(-aLine.end.x, -aLine.end.y)),
-                line(point(-aLine.start.x, aLine.start.y), point(-aLine.end.x, aLine.end.y))
+                line(point(aLine.start.x, -aLine.start.y), point(aLine.end.x, -aLine.end.y), aLine.noBeastStart),
+                line(point(-aLine.start.x, -aLine.start.y), point(-aLine.end.x, -aLine.end.y), aLine.noBeastStart),
+                line(point(-aLine.start.x, aLine.start.y), point(-aLine.end.x, aLine.end.y), aLine.noBeastStart)
             ];
         }
         const layoutLen = this.layout.length;
@@ -75,14 +76,14 @@ const parcours = {
             context.beginPath();
             context.lineWidth = LINE_WIDTH;
             context.setLineDash([]);
-            context.strokeStyle = 'green';
+            context.strokeStyle = 'green';  // TODO
             context.moveTo(line.start.getX(), line.start.getY());
             context.lineTo(line.end.getX(), line.end.getY());
             context.stroke();
 
             context.beginPath();
-            context.lineWidth = 2;
-            context.setLineDash([2,2]);
+            context.lineWidth = 2;  // TODO
+            context.setLineDash([2,2]);  // TODO
             context.strokeStyle = LINE_COLOR;
             context.moveTo(line.start.getX(), line.start.getY());
             context.lineTo(line.end.getX(), line.end.getY());

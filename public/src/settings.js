@@ -4,6 +4,7 @@ export const CANVAS_HEIGHT_ORIG = 0;
 export const CANVAS_HEIGHT = 400;
 export const BACKGROUND = 'blue';
 export const PAC_COLOR = 'white';
+export const BEAST_COLOR = 'black';
 export const PAC_WIDTH = 10;
 export const PAC_HEIGHT = 10;
 export const LINE_WIDTH = 10;

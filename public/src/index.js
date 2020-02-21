@@ -23,14 +23,15 @@ const beasts = [
 ];
 beasts.forEach(beast => {
     beast.chooseLine(parcours);
+    beast.iAmBeast();
     beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));
 });
 
-setInterval(function() {
-    beasts.forEach(beast => {
-        beast.walkTheLine();
-    });
-},50);
+// setInterval(function() {
+//     beasts.forEach(beast => {
+//         beast.walkTheLine();
+//     });
+// },50);
 
 
 const keypressHandler = getKeypressHandler(pac, parcours);

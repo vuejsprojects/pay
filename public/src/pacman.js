@@ -5,6 +5,7 @@ import {
     CANVAS_HEIGHT,
     BACKGROUND,
     PAC_COLOR,
+    BEAST_COLOR,
     PAC_HEIGHT,
     PAC_WIDTH,
     LEFT,
@@ -13,7 +14,9 @@ import {
     DOWN,
     HORIZONTAL,
     VERTICAL,
-    INC
+    INC,
+    LINE_WIDTH,
+    LINE_COLOR
 } from './settings.js';
 
 const getPac = function (context) {
@@ -90,11 +93,17 @@ const getPac = function (context) {
         DOWN: DOWN,
         posX: 0,
         posY: 0,
+        beast: false,
+        color: PAC_COLOR,
+        iAmBeast: function() {
+            this.beast = true;
+            this.color = BEAST_COLOR;
+        },
         initialPosition: function (position) {
             const center = centerPacCoordinates(position);
             this.posX = center.posX;
             this.posY = center.posY;
-            context.fillStyle = PAC_COLOR;
+            context.fillStyle = this.color;
             context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
         },
         move: function (event, parcours) {
@@ -115,12 +124,50 @@ const getPac = function (context) {
         setNewPosition: function(newPosition) {
             this.posX = newPosition.position.posX;
             this.posY = newPosition.position.posY;
-    },
-        draw: function() {
-            context.fillStyle = PAC_COLOR;
-            context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
-            context.fillStyle = BACKGROUND;
-            context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
+        },
+        draw: function(direction) {
+            const that = this;
+            const drawLine = function(that, width, color, dashed) {
+                context.beginPath();
+                context.lineWidth = width;
+                context.setLineDash(dashed || []);
+                context.strokeStyle = color; 
+                const c = getLineCoordinateFromTo(that, direction);
+                context.moveTo(c.from.x, c.from.y);
+                context.lineTo(c.to.x, c.to.y);
+                context.stroke();
+            };
+            const getLineCoordinateFromTo = function(that, direction) {
+                return {
+                    from: {
+                        x: direction === RIGHT ? that.prevPosX : direction === LEFT ? that.prevPosX + PAC_WIDTH : 
+                        direction === UP ? that.prevPosX + (PAC_WIDTH/2) : that.prevPosX + (PAC_WIDTH/2),
+                        y: that.prevPosY +(PAC_HEIGHT/2)
+                    },
+                    to: {
+                        x: direction === RIGHT ? that.posX : direction === LEFT ? that.posX + PAC_WIDTH:
+                        direction === UP ? that.posX + (PAC_WIDTH/2) : that.posX + (PAC_WIDTH/2),
+                        y: that.posY +(PAC_HEIGHT/2)
+                    }
+                }
+            };
+            if (this.beast) {
+                context.fillStyle = this.color;
+                context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+
+                // context.fillStyle = BACKGROUND;
+                // context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
+
+                drawLine(that, LINE_WIDTH, 'green', []);
+    
+                drawLine(that, 2, LINE_COLOR, [2,2]);
+            }
+            else {
+                context.fillStyle = this.color;
+                context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+                context.fillStyle = BACKGROUND;
+                context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
+            }
         }
     }
 }
