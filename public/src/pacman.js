@@ -16,15 +16,19 @@ import {
     VERTICAL,
     INC,
     LINE_WIDTH,
-    LINE_COLOR
+    LINE_COLOR,
+    ARC
 } from './settings.js';
 
-const getPac = function (context) {
+const getPac = function (context, prizes) {
 
+    // TODO square would have to be recentered before end so (PAC_WIDH / 2) on posX and (PAC_HEIGHT / 2)
+    // on posY not needed to readjust position
     const getRelativePosition = function( position) {
+        
         const relativePosition = {
-            posX: (position.posX + (PAC_WIDTH / 2))- (CANVAS_WIDTH - CANVAS_WIDTH_ORIG) / 2,
-            posY: ((CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG) / 2) - (position.posY + (PAC_HEIGHT / 2))
+            posX: position.posX - (CANVAS_WIDTH - CANVAS_WIDTH_ORIG) / 2,
+            posY: ((CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG) / 2) - position.posY
         }
         return relativePosition;
     };
@@ -78,10 +82,18 @@ const getPac = function (context) {
         }
 
     };
-    const centerPacCoordinates = function(coordinates) {
+    const centerPacCoordinates = function(shape, coordinates) {
         const center = {
-            posX: coordinates.posX - (PAC_WIDTH / 2),
-            posY: coordinates.posY - (PAC_HEIGHT / 2)
+            posX: 0,
+            posY: 0
+        }
+        if (shape === ARC) {
+            center.posX =  coordinates.posX;
+            center.posY = coordinates.posY;
+        }
+        else {
+            center.posX =  coordinates.posX - (PAC_WIDTH / 2);
+            center.posY = coordinates.posY - (PAC_HEIGHT / 2);
         }
         return center
     };
@@ -95,16 +107,19 @@ const getPac = function (context) {
         posY: 0,
         beast: false,
         color: PAC_COLOR,
+        myShape: ARC,
         iAmBeast: function() {
             this.beast = true;
             this.color = BEAST_COLOR;
         },
-        initialPosition: function (position) {
-            const center = centerPacCoordinates(position);
+        initialPosition: function (position, shape) {
+            this.myShape = shape || this.myShape;
+            const center = centerPacCoordinates(this.myShape, position);
             this.posX = center.posX;
             this.posY = center.posY;
-            context.fillStyle = this.color;
-            context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+            this.drawShape();
+            // context.fillStyle = this.color;
+            // context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
         },
         move: function (event, parcours) {
             const direction = event.keyCode;
@@ -127,6 +142,7 @@ const getPac = function (context) {
         },
         draw: function(direction) {
             const that = this;
+            // TODO reuse drawline in parcours
             const drawLine = function(that, width, color, dashed) {
                 context.beginPath();
                 context.lineWidth = width;
@@ -152,22 +168,59 @@ const getPac = function (context) {
                 }
             };
             if (this.beast) {
-                context.fillStyle = this.color;
-                context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+                // context.fillStyle = this.color;
+                // context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+                this.drawShape();
 
                 // context.fillStyle = BACKGROUND;
                 // context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
 
-                drawLine(that, LINE_WIDTH, 'green', []);
+                // drawLine(that, LINE_WIDTH, 'green', []);
     
-                drawLine(that, 2, LINE_COLOR, [2,2]);
+                // drawLine(that, 2, LINE_COLOR, [2,2]);
+            }
+            else {
+                this.drawShape();
+            }
+        },
+        drawShape: function() {
+            if (this.myShape === ARC) {
+                context.beginPath();
+                context.fillStyle = this.color;
+                context.arc(this.posX, this.posY, PAC_WIDTH / 2, 0, 2 * Math.PI);
+                context.fill();
+                context.closePath();
+                if (this.prevPosX && this.prevPosY) {
+                    context.beginPath();
+                    context.fillStyle = 'green'; // TODO BACKGROUND;
+                    context.arc(this.prevPosX, this.prevPosY, PAC_WIDTH / 2, 0, 2 * Math.PI);
+                    context.fill();
+                    context.closePath();
+
+                    const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
+                    const redrawPrize = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY);
+                    if (redrawPrize) {
+                        if( this.beast) {
+                        redrawPrize();
+                        }
+                        else {
+                            this.incrementLives();
+                        }
+                    }
+                }
             }
             else {
                 context.fillStyle = this.color;
                 context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
-                context.fillStyle = BACKGROUND;
-                context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
+                if (this.prevPosX && this.prevPosY) {
+                    context.fillStyle = BACKGROUND;
+                    context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
+                }
             }
+
+        },
+        incrementLives = function() {
+            this.lives += 1;
         }
     }
 }

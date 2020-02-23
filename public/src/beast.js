@@ -5,9 +5,9 @@ import {
     HORIZONTAL
 } from './settings.js';
 
-const getBeast = function(context) {
+const getBeast = function(context, prizes) {
 
-    const beast = getPac(context);
+    const beast = getPac(context, prizes);
 
     const roundRobinMove = {};
     roundRobinMove[beast.UP] = beast.RIGHT;

@@ -3,6 +3,7 @@ import { getPac } from './pacman.js';
 import { parcours } from './parcours.js';
 import { getBeast } from './beast.js';
 import { CANVAS_CENTER } from './point.js';
+import { prizes } from './prizes.js'
 
 
 const getKeypressHandler = function (pac, parcours) {
@@ -13,13 +14,17 @@ const getKeypressHandler = function (pac, parcours) {
 }
 
 const context = initCanvas();
-const pac = getPac(context);
+const prizesSet = prizes(context);
+
+const pac = getPac(context, prizesSet);
+
 parcours.build();
 parcours.display(context);
+
 pac.initialPosition(CANVAS_CENTER);
 
 const beasts = [
-    getBeast(context)
+    getBeast(context, prizesSet)
 ];
 beasts.forEach(beast => {
     beast.chooseLine(parcours);
@@ -27,11 +32,13 @@ beasts.forEach(beast => {
     beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));
 });
 
-// setInterval(function() {
-//     beasts.forEach(beast => {
-//         beast.walkTheLine();
-//     });
-// },50);
+prizesSet.sprinkle(parcours).display();
+
+setInterval(function() {
+    beasts.forEach(beast => {
+        beast.walkTheLine();
+    });
+},50);
 
 
 const keypressHandler = getKeypressHandler(pac, parcours);
