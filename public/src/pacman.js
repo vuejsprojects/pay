@@ -17,10 +17,14 @@ import {
     INC,
     LINE_WIDTH,
     LINE_COLOR,
-    ARC
+    ARC,
+    BOOST_COLOR
 } from './settings.js';
 
-const getPac = function (context, prizes) {
+//
+// getPac is called by beast as well in this case it need a reference to pac
+//
+const getPac = function (context, prizes, pac) {
 
     // TODO square would have to be recentered before end so (PAC_WIDH / 2) on posX and (PAC_HEIGHT / 2)
     // on posY not needed to readjust position
@@ -108,6 +112,9 @@ const getPac = function (context, prizes) {
         beast: false,
         color: PAC_COLOR,
         myShape: ARC,
+        lives: 0,
+        counter: 0,
+
         iAmBeast: function() {
             this.beast = true;
             this.color = BEAST_COLOR;
@@ -120,6 +127,10 @@ const getPac = function (context, prizes) {
             this.drawShape();
             // context.fillStyle = this.color;
             // context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
+            this.displayCounter();
+        },
+        displayCounter: function() {
+            document.getElementById('counter').innerText = this.counter;
         },
         move: function (event, parcours) {
             const direction = event.keyCode;
@@ -190,6 +201,18 @@ const getPac = function (context, prizes) {
                 context.arc(this.posX, this.posY, PAC_WIDTH / 2, 0, 2 * Math.PI);
                 context.fill();
                 context.closePath();
+                if (this.beast && this.posX === pac.posX && this.posY === pac.posY) {
+                    if (pac.lives > 0) {
+                        pac.incrementCounter(10);
+                        pac.displayCounter();
+                        pac.killBeast(); // TODO should remove the beast from the array
+                        pac.drawShape();
+                        return;
+                    }
+                    else {
+                        pac.gameOver();
+                    }
+                }
                 if (this.prevPosX && this.prevPosY) {
                     context.beginPath();
                     context.fillStyle = 'green'; // TODO BACKGROUND;
@@ -198,13 +221,16 @@ const getPac = function (context, prizes) {
                     context.closePath();
 
                     const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
-                    const redrawPrize = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY);
+                    const redrawPrize = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.beast);
                     if (redrawPrize) {
                         if( this.beast) {
-                        redrawPrize();
+                            redrawPrize();
                         }
                         else {
                             this.incrementLives();
+                            this.incrementCounter(5);
+                            this.color = BOOST_COLOR;
+                            this.displayCounter();
                         }
                     }
                 }
@@ -219,8 +245,21 @@ const getPac = function (context, prizes) {
             }
 
         },
-        incrementLives = function() {
+        incrementLives: function() {
             this.lives += 1;
+        },
+        incrementCounter: function(inc) {
+            this.counter += inc;
+        },
+        gameOver: function() {
+            document.getElementById('game-over').innerText = "Game Over";
+            clearInterval(this.beastSetInterval)
+        },
+        startBeastTimer: function(beastTimer) {
+            this.beastSetInterval = beastTimer();
+        },
+        killBeast: function() {
+
         }
     }
 }

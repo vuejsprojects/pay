@@ -60,21 +60,27 @@ const prizes = function(context) {
                 context.closePath();        
             });
         },
-        isPrizeLocation: function(x, y) {
+        isPrizeLocation: function(x, y, beast) {
             for (let i = 0; i < this.location.length; i++) {
                 if (x === this.location[i].point.x && y === this.location[i].point.y) {
-                    const that = this;
-                    return function() {
-                        context.beginPath();
-                        context.fillStyle = that.location[i].color;
-                        context.arc(
-                            that.location[i].point.getX(), 
-                            that.location[i].point.getY(), 
-                            PAC_WIDTH / 2, 0, 2 * Math.PI
-                        );
-                        context.fill();
-                        context.closePath();        
-                    };
+                    if (beast) {
+                        const that = this;
+                        return function() {
+                            context.beginPath();
+                            context.fillStyle = that.location[i].color;
+                            context.arc(
+                                that.location[i].point.getX(), 
+                                that.location[i].point.getY(), 
+                                PAC_WIDTH / 2, 0, 2 * Math.PI
+                            );
+                            context.fill();
+                            context.closePath();        
+                        };
+                    }
+                    else {
+                        this.location.splice(i, 1);
+                        return this.location.length;
+                    }
                 }
             }
         }

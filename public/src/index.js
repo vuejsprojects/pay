@@ -24,7 +24,7 @@ parcours.display(context);
 pac.initialPosition(CANVAS_CENTER);
 
 const beasts = [
-    getBeast(context, prizesSet)
+    getBeast(context, prizesSet, pac)
 ];
 beasts.forEach(beast => {
     beast.chooseLine(parcours);
@@ -34,12 +34,19 @@ beasts.forEach(beast => {
 
 prizesSet.sprinkle(parcours).display();
 
-setInterval(function() {
-    beasts.forEach(beast => {
-        beast.walkTheLine();
-    });
-},50);
+const setBeastWalkTimer = function () {
+    return function() {
+        const beastWalkTimer = setInterval(function() {
+            beasts.forEach(beast => {
+                beast.walkTheLine();
+            });
+        },50);
+        return beastWalkTimer;
+    }
+}
 
+const beastTimer = setBeastWalkTimer();
+pac.startBeastTimer(beastTimer);
 
 const keypressHandler = getKeypressHandler(pac, parcours);
 
