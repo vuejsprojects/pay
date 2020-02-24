@@ -68,6 +68,8 @@ const getBeast = function(context, prizes, pac) {
         }
     }
 
+    beast.beastActive = true;
+
     beast.isTimeToChangeDirection = isTimeToChangeDirection();
 
     beast.chooseLine = function(parcours) {
@@ -82,19 +84,21 @@ const getBeast = function(context, prizes, pac) {
     };
 
     beast.walkTheLine = function() {
-        if (!this.lastMove) {
-            this.lastMove = randomWalk();
-        }
-        const moved = this.move({keyCode: this.lastMove}, parcours);
-        if (!moved) {
-            this.lastMove = nextMove(this.lastMove);
-        }
-        else  {
-            if (this.isTimeToChangeDirection()) {
-                const newDirection = getNewDirection(this.lastMove);
-                const success = this.move({keyCode: newDirection}, parcours);
-                if (success) {
-                    this.lastMove = newDirection;
+        if (this.beastActive) {
+            if (!this.lastMove) {
+                this.lastMove = randomWalk();
+            }
+            const moved = this.move({keyCode: this.lastMove}, parcours);
+            if (!moved) {
+                this.lastMove = nextMove(this.lastMove);
+            }
+            else  {
+                if (this.isTimeToChangeDirection()) {
+                    const newDirection = getNewDirection(this.lastMove);
+                    const success = this.move({keyCode: newDirection}, parcours);
+                    if (success) {
+                        this.lastMove = newDirection;
+                    }
                 }
             }
         }

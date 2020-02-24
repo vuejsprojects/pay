@@ -112,7 +112,7 @@ const getPac = function (context, prizes, pac) {
         beast: false,
         color: PAC_COLOR,
         myShape: ARC,
-        lives: 0,
+        specialPower: false,
         counter: 0,
 
         iAmBeast: function() {
@@ -196,29 +196,8 @@ const getPac = function (context, prizes, pac) {
         },
         drawShape: function() {
             if (this.myShape === ARC) {
-                context.beginPath();
-                context.fillStyle = this.color;
-                context.arc(this.posX, this.posY, PAC_WIDTH / 2, 0, 2 * Math.PI);
-                context.fill();
-                context.closePath();
-                if (this.beast && this.posX === pac.posX && this.posY === pac.posY) {
-                    if (pac.lives > 0) {
-                        pac.incrementCounter(10);
-                        pac.displayCounter();
-                        pac.killBeast(); // TODO should remove the beast from the array
-                        pac.drawShape();
-                        return;
-                    }
-                    else {
-                        pac.gameOver();
-                    }
-                }
                 if (this.prevPosX && this.prevPosY) {
-                    context.beginPath();
-                    context.fillStyle = 'green'; // TODO BACKGROUND;
-                    context.arc(this.prevPosX, this.prevPosY, PAC_WIDTH / 2, 0, 2 * Math.PI);
-                    context.fill();
-                    context.closePath();
+                    this.drawPreviousPosition();
 
                     const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
                     const redrawPrize = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.beast);
@@ -227,13 +206,28 @@ const getPac = function (context, prizes, pac) {
                             redrawPrize();
                         }
                         else {
-                            this.incrementLives();
+                            this.acquireSpecialPower();
                             this.incrementCounter(5);
                             this.color = BOOST_COLOR;
                             this.displayCounter();
+                            setTimeout(this.prepareEndOfSpecialPower(), 10000);
                         }
                     }
                 }
+
+                if (this.beast && this.posX === pac.posX && this.posY === pac.posY) {
+                    if (pac.specialPower) {
+                        pac.incrementCounter(10);
+                        pac.displayCounter();
+                        this.deactiveBeast();
+                        return;
+                    }
+                    else {
+                        pac.gameOver();
+                    }
+                }
+
+                this.drawCurrentPosition()
             }
             else {
                 context.fillStyle = this.color;
@@ -245,8 +239,39 @@ const getPac = function (context, prizes, pac) {
             }
 
         },
-        incrementLives: function() {
-            this.lives += 1;
+        drawCurrentPosition: function() {
+            const x = this.posX;
+            const y =  this.posY;
+            const color = this.color;
+            this.drawPosition(x, y, color);
+        },
+        drawPreviousPosition: function() {
+            const x = this.prevPosX;
+            const y =  this.prevPosY;
+            const color = 'green'; // TODO BACKGROUND;
+            this.drawPosition(x, y, color);
+        },
+        drawPosition: function(x, y, color) {
+            context.beginPath();
+            context.fillStyle = color;
+            context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
+            context.fill();
+            context.closePath();
+
+        },
+        acquireSpecialPower: function() {
+            this.specialPower = true;
+        },
+        prepareEndOfSpecialPower: function() {
+            const that = this;
+            return function() {
+                that.endOfSpecialPower()
+            };
+
+        },
+        endOfSpecialPower: function() {
+            this.color = PAC_COLOR;
+            this.drawCurrentPosition();
         },
         incrementCounter: function(inc) {
             this.counter += inc;
@@ -258,8 +283,8 @@ const getPac = function (context, prizes, pac) {
         startBeastTimer: function(beastTimer) {
             this.beastSetInterval = beastTimer();
         },
-        killBeast: function() {
-
+        deactiveBeast: function() {
+            this.beastActive = false;
         }
     }
 }
