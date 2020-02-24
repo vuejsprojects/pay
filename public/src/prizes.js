@@ -19,7 +19,7 @@ const prizes = function(context) {
             return mid;
         },
         sprinkle: function(parcours) {
-            for (let i=0; i < parcours.layout.length; i++) {
+            for (let i=0; i < parcours.layout.length; i+=2) {
                 if (!parcours.layout[i].noBeastStart) {
                     if (this.isHorizontal(parcours.layout[i])) {
                         this.location.push(

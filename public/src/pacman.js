@@ -18,7 +18,8 @@ import {
     LINE_WIDTH,
     LINE_COLOR,
     ARC,
-    BOOST_COLOR
+    BOOST_COLOR,
+    GAME_OVER_COLOR
 } from './settings.js';
 
 //
@@ -209,17 +210,15 @@ const getPac = function (context, prizes, pac) {
                             this.acquireSpecialPower();
                             this.incrementCounter(5);
                             this.color = BOOST_COLOR;
-                            this.displayCounter();
                             setTimeout(this.prepareEndOfSpecialPower(), 10000);
                         }
                     }
                 }
 
                 if (this.beast && this.posX === pac.posX && this.posY === pac.posY) {
-                    if (pac.specialPower) {
-                        pac.incrementCounter(10);
-                        pac.displayCounter();
+                    if (pac.hasSpecialPower()) {
                         this.deactiveBeast();
+                        pac.incrementCounter(10);
                         return;
                     }
                     else {
@@ -262,6 +261,9 @@ const getPac = function (context, prizes, pac) {
         acquireSpecialPower: function() {
             this.specialPower = true;
         },
+        hasSpecialPower: function() {
+            return this.specialPower;
+        },
         prepareEndOfSpecialPower: function() {
             const that = this;
             return function() {
@@ -275,16 +277,40 @@ const getPac = function (context, prizes, pac) {
         },
         incrementCounter: function(inc) {
             this.counter += inc;
+            this.displayCounter();
         },
         gameOver: function() {
-            document.getElementById('game-over').innerText = "Game Over";
-            clearInterval(this.beastSetInterval)
+            this.displayGameOverMessage();
+            this.stopBeastTimer();
+            this.deactivatePac();
+            this.stopGameTimer();
+        },
+        displayGameOverMessage: function() {
+            context.font = '48px serif';
+            context.fillStyle = GAME_OVER_COLOR;
+            context.fillText('Game Over!!!!', 10, CANVAS_HEIGHT_ORIG + (CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG)/2);
         },
         startBeastTimer: function(beastTimer) {
             this.beastSetInterval = beastTimer();
         },
+        stopBeastTimer: function() {
+            clearInterval(this.beastSetInterval);
+        },
+        startGameTimer: function(setGameTimer) {
+            this.gameTimer = setGameTimer();
+        },
+        stopGameTimer: function() {
+            clearInterval(this.gameTimer);
+        },
         deactiveBeast: function() {
             this.beastActive = false;
+        },
+        saveKeyDownEventHandler: function(event, keypressHandler) {
+            this.capturedEvent = event;
+            this.eventHandler = keypressHandler;
+        },
+        deactivatePac: function() {
+            window.removeEventListener(this.capturedEvent, this.eventHandler, true);
         }
     }
 }

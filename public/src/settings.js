@@ -2,7 +2,7 @@ export const CANVAS_WIDTH_ORIG = 0;
 export const CANVAS_WIDTH = 400;
 export const CANVAS_HEIGHT_ORIG = 0;
 export const CANVAS_HEIGHT = 400;
-export const BACKGROUND = 'blue';
+export const BACKGROUND = 'red';  //'blue';
 export const PAC_COLOR = 'white';
 export const BOOST_COLOR = 'red';
 export const BEAST_COLOR = 'black';
@@ -20,7 +20,7 @@ export const DOWN = 40;
 export const INC = 10;
 export const ARC = 'arc';
 export const RECT = 'rect';
-
+export const GAME_OVER_COLOR = 'white';
 
 
 export const CANVAS_CENTER = {

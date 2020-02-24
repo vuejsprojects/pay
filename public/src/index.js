@@ -4,6 +4,7 @@ import { parcours } from './parcours.js';
 import { getBeast } from './beast.js';
 import { CANVAS_CENTER } from './point.js';
 import { prizes } from './prizes.js'
+import { setGameTimer} from './game-timer.js'
 
 
 const getKeypressHandler = function (pac, parcours) {
@@ -48,7 +49,9 @@ const setBeastWalkTimer = function () {
 const beastTimer = setBeastWalkTimer();
 pac.startBeastTimer(beastTimer);
 
-const keypressHandler = getKeypressHandler(pac, parcours);
+pac.startGameTimer(setGameTimer());
 
+const keypressHandler = getKeypressHandler(pac, parcours);
 window.addEventListener("keydown", keypressHandler, true);
+pac.saveKeyDownEventHandler("keydown", keypressHandler);
 
