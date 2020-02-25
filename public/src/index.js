@@ -46,12 +46,28 @@ const setBeastWalkTimer = function () {
     }
 }
 
-const beastTimer = setBeastWalkTimer();
-pac.startBeastTimer(beastTimer);
+const boardLoader = function() {
+    let boardCounter = 0;
+    return function() {
+        boardCounter += 1;
+        if (!pac.isPacAlive()) {
+            // game over happened so reset pac
+            // put back the prizes
+            pac.reactivatePac();
+        }
+        document.getElementById("start-button").disabled = true;
 
-pac.startGameTimer(setGameTimer());
+        const beastTimer = setBeastWalkTimer();
+        pac.startBeastTimer(beastTimer);
 
-const keypressHandler = getKeypressHandler(pac, parcours);
-window.addEventListener("keydown", keypressHandler, true);
-pac.saveKeyDownEventHandler("keydown", keypressHandler);
+        pac.startGameTimer(setGameTimer());
 
+        const keypressHandler = getKeypressHandler(pac, parcours);
+        window.addEventListener("keydown", keypressHandler, true);
+        pac.saveKeyDownEventHandler("keydown", keypressHandler);
+    }
+}
+
+const startGame = boardLoader();
+
+document.getElementById ("start-button").addEventListener("click", startGame, true);

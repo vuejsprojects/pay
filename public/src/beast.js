@@ -24,7 +24,6 @@ const getBeast = function(context, prizes, pac) {
     const randomWalk = function() {
         const axis = randomWalkAxis();
         const ra = Math.floor(Math.random() * 2);
-        console.log("DWON LEFT or UP RIGHT: ", ra);
         if( ra === 0) {
             return (axis === VERTICAL) ? beast.DOWN : beast.LEFT;
         }
@@ -35,7 +34,6 @@ const getBeast = function(context, prizes, pac) {
 
     const randomWalkAxis = function() {
         const ra = Math.floor(Math.random() * 2);
-        console.log("Random axis: ",ra);
         return ra === 0 ? HORIZONTAL : VERTICAL;
     };
 
@@ -67,6 +65,8 @@ const getBeast = function(context, prizes, pac) {
             }
         }
     }
+
+    // Augmenting beast object
 
     beast.beastActive = true;
 
@@ -103,12 +103,14 @@ const getBeast = function(context, prizes, pac) {
             }
         }
     };
+
     beast.fromUpperLeftCorner = function(point) {
         return {
             posX: point.getX(),
             posY: point.getY()
         }
     };
+    
     return beast;
 };
 

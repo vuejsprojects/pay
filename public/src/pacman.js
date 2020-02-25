@@ -21,6 +21,7 @@ import {
     BOOST_COLOR,
     GAME_OVER_COLOR
 } from './settings.js';
+import { CANVAS_CENTER } from './point.js';
 
 //
 // getPac is called by beast as well in this case it need a reference to pac
@@ -115,6 +116,7 @@ const getPac = function (context, prizes, pac) {
         myShape: ARC,
         specialPower: false,
         counter: 0,
+        pacAlive: true,
 
         iAmBeast: function() {
             this.beast = true;
@@ -201,16 +203,21 @@ const getPac = function (context, prizes, pac) {
                     this.drawPreviousPosition();
 
                     const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
-                    const redrawPrize = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.beast);
-                    if (redrawPrize) {
+                    const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.beast);
+                    if (prizeIndex) {
                         if( this.beast) {
-                            redrawPrize();
+                            prizes.redrawPrize(prizeIndex);
                         }
                         else {
-                            this.acquireSpecialPower();
-                            this.incrementCounter(5);
-                            this.color = BOOST_COLOR;
-                            setTimeout(this.prepareEndOfSpecialPower(), 10000);
+                            if (prizes.areAllLocationsInactive() && !this.beast) {
+                                this.gameWon();
+                            }
+                            else {
+                                this.acquireSpecialPower();
+                                this.incrementCounter(5);
+                                this.color = BOOST_COLOR;
+                                setTimeout(this.prepareEndOfSpecialPower(), 10000);
+                            }
                         }
                     }
                 }
@@ -274,6 +281,7 @@ const getPac = function (context, prizes, pac) {
         endOfSpecialPower: function() {
             this.color = PAC_COLOR;
             this.drawCurrentPosition();
+            this.specialPower = false;
         },
         incrementCounter: function(inc) {
             this.counter += inc;
@@ -281,6 +289,17 @@ const getPac = function (context, prizes, pac) {
         },
         gameOver: function() {
             this.displayGameOverMessage();
+            this.stopGame();
+            document.getElementById("start-button").disabled = false;
+        },
+        gameWon:  function() {
+            this.displayGameWonMessage();
+            this.stopGame();
+            const startButton = document.getElementById("start-button")
+            startButton.disabled = false;
+            startButton.innerText = 'Start New Game'
+        },
+        stopGame: function() {
             this.stopBeastTimer();
             this.deactivatePac();
             this.stopGameTimer();
@@ -289,6 +308,11 @@ const getPac = function (context, prizes, pac) {
             context.font = '48px serif';
             context.fillStyle = GAME_OVER_COLOR;
             context.fillText('Game Over!!!!', 10, CANVAS_HEIGHT_ORIG + (CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG)/2);
+        },
+        displayGameWonMessage: function() {
+            context.font = '48px serif';
+            context.fillStyle = GAME_OVER_COLOR;
+            context.fillText('Bravo!!!!', 10, CANVAS_HEIGHT_ORIG + (CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG)/2);
         },
         startBeastTimer: function(beastTimer) {
             this.beastSetInterval = beastTimer();
@@ -311,6 +335,15 @@ const getPac = function (context, prizes, pac) {
         },
         deactivatePac: function() {
             window.removeEventListener(this.capturedEvent, this.eventHandler, true);
+            this.pacAlive = false;
+        },
+        reactivatePac: function() {
+            this.pacAlive = true;
+            this.initialPosition(CANVAS_CENTER);
+            //window.removeEventListener(this.capturedEvent, this.eventHandler, true);
+        },
+        isPacAlive: function() {
+            return this.pacAlive;
         }
     }
 }

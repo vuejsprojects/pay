@@ -95,7 +95,6 @@ const parcours = {
         context.strokeStyle = BORDER_COLOR;
         context.lineWidth = LINE_WIDTH;
         this.layout.forEach(line => {
-            console.log(line);
             if (line.start.getY() === line.end.getY()) {
                 // horizontal borders
                 context.moveTo(line.start.getX() + ((line.end.x < 0) ? LINE_WIDTH * -0.5 : LINE_WIDTH / 2), line.start.getY() - LINE_WIDTH);

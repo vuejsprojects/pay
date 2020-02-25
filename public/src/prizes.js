@@ -15,7 +15,6 @@ const prizes = function(context) {
         incRounded: function(start, end) {
             let mid = start + (end - start) / 2;
             mid = Math.floor(mid / INC) * INC;
-            console.log(mid)
             return mid;
         },
         sprinkle: function(parcours) {
@@ -30,7 +29,8 @@ const prizes = function(context) {
                                     parcours.layout[i].start.y
                                 ),
                                 color: colors[i % colors.length],
-                                line: parcours.layout[i]
+                                line: parcours.layout[i],
+                                active: true
                             }
                         );
                     }
@@ -43,7 +43,8 @@ const prizes = function(context) {
                                     this.incRounded(parcours.layout[i].start.y, parcours.layout[i].end.y)
                                 ),
                                 color: colors[i % colors.length],
-                                line: parcours.layout[i]
+                                line: parcours.layout[i],
+                                active: true
                             }
                         );
                     }
@@ -62,27 +63,52 @@ const prizes = function(context) {
         },
         isPrizeLocation: function(x, y, beast) {
             for (let i = 0; i < this.location.length; i++) {
-                if (x === this.location[i].point.x && y === this.location[i].point.y) {
-                    if (beast) {
-                        const that = this;
-                        return function() {
-                            context.beginPath();
-                            context.fillStyle = that.location[i].color;
-                            context.arc(
-                                that.location[i].point.getX(), 
-                                that.location[i].point.getY(), 
-                                PAC_WIDTH / 2, 0, 2 * Math.PI
-                            );
-                            context.fill();
-                            context.closePath();        
-                        };
+                if (x === this.location[i].point.x && 
+                    y === this.location[i].point.y && 
+                    this.location[i].active) {
+
+                    if (!beast) {
+                        // const that = this;
+                        // return function() {
+                        //     context.beginPath();
+                        //     context.fillStyle = that.location[i].color;
+                        //     context.arc(
+                        //         that.location[i].point.getX(), 
+                        //         that.location[i].point.getY(), 
+                        //         PAC_WIDTH / 2, 0, 2 * Math.PI
+                        //     );
+                        //     context.fill();
+                        //     context.closePath();        
+                        // };
+                    //     return i;
+                    // }
+                    // else {
+                        this.location[i].active = false;
+                        // this.location.splice(i, 1);
+                        // return this.location.length;
                     }
-                    else {
-                        this.location.splice(i, 1);
-                        return this.location.length;
-                    }
+                    return i;
                 }
             }
+        },
+        redrawPrize: function(prizeIndex){
+            context.beginPath();
+            context.fillStyle = this.location[prizeIndex].color;
+            context.arc(
+                this.location[prizeIndex].point.getX(), 
+                this.location[prizeIndex].point.getY(), 
+                PAC_WIDTH / 2, 0, 2 * Math.PI
+            );
+            context.fill();
+            context.closePath();        
+        },
+        areAllLocationsInactive: function() {
+            for (let i = 0; i < this.location.length; i++) {
+                if (this.location[i].active) {
+                    return false;
+                }
+            }
+            return true;
         }
     };
     return prizesSet;
