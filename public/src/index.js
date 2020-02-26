@@ -1,4 +1,4 @@
-import { initCanvas} from './canvas.js';
+import { getCanvas} from './canvas.js';
 import { getPac } from './pacman.js';
 import { parcours } from './parcours.js';
 import { getBeast } from './beast.js';
@@ -14,7 +14,8 @@ const getKeypressHandler = function (pac, parcours) {
     return func;
 }
 
-const context = initCanvas();
+const canvas = getCanvas();
+const context = canvas.initCanvas();
 const prizesSet = prizes(context);
 
 const pac = getPac(context, prizesSet);
@@ -50,10 +51,27 @@ const boardLoader = function() {
     let boardCounter = 0;
     return function() {
         boardCounter += 1;
-        if (!pac.isPacAlive()) {
-            // game over happened so reset pac
-            // put back the prizes
-            pac.reactivatePac();
+        if (boardCounter > 1) {
+            if (pac.isPacAlive()) {
+                // add beast
+                const beast = getBeast(context, prizesSet, pac);
+                beast.chooseLine(parcours);
+                beast.iAmBeast();
+                beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));
+                beasts.push(beast);
+                // redraw parcours
+                canvas.redrawBackgound();
+                parcours.display(context);
+                // reactivate prizes
+                prizesSet.display();
+                pac.reactivatePac();
+            }
+            else {
+                // game over happened so reset pac
+                // put back the prizes
+                // reset time elpase and points
+                pac.reactivatePac();
+            }
         }
         document.getElementById("start-button").disabled = true;
 
@@ -69,5 +87,7 @@ const boardLoader = function() {
 }
 
 const startGame = boardLoader();
-
-document.getElementById ("start-button").addEventListener("click", startGame, true);
+// TODO regroup all action on start-button in a module
+const startButton = document.getElementById ("start-button");
+startButton.focus();
+startButton.addEventListener("click", startGame, true);

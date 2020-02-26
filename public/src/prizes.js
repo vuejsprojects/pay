@@ -54,6 +54,7 @@ const prizes = function(context) {
         },
         display: function() {
             this.location.forEach(prize => {
+                prize.active = true;
                 context.beginPath();
                 context.fillStyle = prize.color;
                 context.arc(prize.point.getX(), prize.point.getY(), PAC_WIDTH / 2, 0, 2 * Math.PI);
