@@ -1,13 +1,18 @@
+import { getDocManager } from './docManager.js';
+
+
+const docMgr = getDocManager();
+
 function setincrementGameTimer(from) {
-    counter = from;
+    let counter = from;
     return function() {
         counter +=1;
-        document.getElementById('game-timer').innerText = this.counter;
+        docMgr.setValue('game-timer', counter);
     }
 };
 
 const getElasedTime = function() {
-    return parseInt(document.getElementById('game-timer').innerText);
+    return docMgr.getIntValue('game-timer');
 };
 
 const setGameTimer = function(from) {

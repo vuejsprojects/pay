@@ -17,7 +17,7 @@ const getKeypressHandler = function (pac, parcours) {
     return func;
 }
 
-const canvas = getCanvas();
+const canvas = getCanvas(docManager);
 const context = canvas.initCanvas();
 const prizesSet = prizes(context);
 
@@ -64,7 +64,7 @@ const boardLoader = function() {
         }
 
         docManager.setValue("board-counter", gameLevel);
-        document.getElementById("start-button").disabled = true;
+        docManager.disable("start-button");
         canvas.getFocus();
 
         const beastTimer = beastsManager.setBeastWalkTimer();
@@ -76,13 +76,12 @@ const boardLoader = function() {
         pac.startGameTimer(setGameTimer, gameTimerStartingTime);
 
         const keypressHandler = getKeypressHandler(pac, parcours);
-        document.addEventListener("keydown", keypressHandler, true);
+        docManager.addEventListener("keydown", keypressHandler);
         pac.saveKeyDownEventHandler("keydown", keypressHandler);
     }
 }
 
 const startGame = boardLoader();
 // TODO regroup all action on start-button in a module
-const startButton = document.getElementById ("start-button");
-startButton.focus();
-startButton.addEventListener("click", startGame, true);
+docManager.setFocus("start-button");
+docManager.addEventListener("click", startGame, "start-button");

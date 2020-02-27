@@ -8,16 +8,14 @@ import {
     LINE_COLOR
 } from './settings.js';
 
-const getCanvas = function () {
+
+const getCanvas = function (docManager) {
     const canvas = {};
     canvas.initCanvas = function () {
-        const canvas = document.createElement("canvas");
-        canvas.setAttribute("id", 'board-game');
-        this.canvas = canvas;
-        canvas.width = CANVAS_WIDTH;
-        canvas.height = CANVAS_HEIGHT;
-        document.body.appendChild(canvas);
-        this.context = canvas.getContext("2d");
+        this.canvas = docManager.createCanvas( 'board-game');
+        this.canvas.width = CANVAS_WIDTH;
+        this.canvas.height = CANVAS_HEIGHT;
+        this.context = this.canvas.getContext("2d");
         this.context.fillStyle = BACKGROUND;
         this.context.fillRect(CANVAS_WIDTH_ORIG, CANVAS_HEIGHT_ORIG, CANVAS_WIDTH, CANVAS_HEIGHT);
         this.context.lineWidth = LINE_WIDTH;

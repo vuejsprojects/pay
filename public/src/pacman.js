@@ -22,7 +22,10 @@ import {
     GAME_OVER_COLOR
 } from './settings.js';
 import { CANVAS_CENTER } from './point.js';
+import { getDocManager } from './docManager.js'
 
+
+const docMgr = getDocManager();
 //
 // getPac is called by beast as well in this case it need a reference to pac
 //
@@ -271,7 +274,7 @@ const getPac = function (context, prizes, pac) {
             this.specialPower = false;
         },
         displayCounter: function() {
-            document.getElementById('counter').innerText = this.counter;
+            docMgr.setValue('counter', this.counter);
         },
         incrementCounter: function(inc) {
             this.counter += inc;
@@ -285,23 +288,22 @@ const getPac = function (context, prizes, pac) {
             this.displayGameOverMessage();
             this.stopGame();
             this.deactivatePac();
-            // TODO put all the document stuff in some object pass as context thru getPac
-            const startButton = document.getElementById("start-button")
-            startButton.disabled = false;
-            startButton.innerText = 'Start New Game';
+            this.setStartButtonTo('Start New Game');
         },
         gameWon:  function() {
             this.displayGameWonMessage();
             this.stopGame();
             this.endOfSpecialPower();
-            const startButton = document.getElementById("start-button")
-            startButton.disabled = false;
-            startButton.innerText = 'Next Level';
+            this.setStartButtonTo('Next Level');
         },
         stopGame: function() {
             this.stopBeastTimer();
             this.stopCapturingPacMotion();
             this.stopGameTimer();
+        },
+        setStartButtonTo: function(label) {
+            docMgr.enable("start-button");
+            docMgr.setValue("start-button", label);
         },
         displayGameOverMessage: function() {
             context.font = '48px serif';
@@ -334,7 +336,7 @@ const getPac = function (context, prizes, pac) {
             this.pacAlive = false;
         },
         stopCapturingPacMotion: function() {
-            document.removeEventListener(this.capturedEvent, this.eventHandler, true);
+            docMgr.removeEventListener(this.capturedEvent, this.eventHandler);
         },
         reactivatePac: function() {
             this.pacAlive = true;
