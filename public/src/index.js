@@ -5,9 +5,11 @@ import { getBeast } from './beast.js';
 import { getBeastsManager } from './beastsManager.js'
 import { CANVAS_CENTER } from './point.js';
 import { prizes } from './prizes.js'
-import { setGameTimer} from './game-timer.js'
+import { setGameTimer, getElasedTime} from './game-timer.js'
+import { getDocManager } from './docManager.js'
 
 
+const docManager = getDocManager();
 const getKeypressHandler = function (pac, parcours) {
     const func = function () {
         pac.move(event, parcours);
@@ -33,19 +35,25 @@ pac.initialPosition(CANVAS_CENTER);
 prizesSet.sprinkle(parcours).display();
 
 const boardLoader = function() {
-    let boardCounter = 0;
+    let gameLevel = 0;
     return function() {
-        boardCounter += 1;
-        if (boardCounter > 1) {
+        gameLevel += 1;
+        let newTimer = true;
+        let gameTimerStartingTime = 0;
+
+        if (gameLevel > 1) {
             if (pac.isPacAlive()) {
                 // add beast
                 beastsManager.addBeast(context, prizesSet, pac, parcours);
                 // elapsed time should not start from 0
+                newTimer = false;
             }
             else {
+                gameLevel = 1;
                 beastsManager.removeBeasts();
                 beastsManager.addBeast(context, prizesSet, pac, parcours);
                 pac.resetCounter();
+                newTimer = true;
             }
             beastsManager.activateAllBeasts();
             canvas.redrawBackground();
@@ -54,13 +62,18 @@ const boardLoader = function() {
             prizesSet.display();
             pac.reactivatePac();
         }
+
+        docManager.setValue("board-counter", gameLevel);
         document.getElementById("start-button").disabled = true;
         canvas.getFocus();
 
         const beastTimer = beastsManager.setBeastWalkTimer();
         pac.startBeastTimer(beastTimer);
 
-        pac.startGameTimer(setGameTimer());
+        if (!newTimer) {
+            gameTimerStartingTime = getElasedTime();
+        }
+        pac.startGameTimer(setGameTimer, gameTimerStartingTime);
 
         const keypressHandler = getKeypressHandler(pac, parcours);
         document.addEventListener("keydown", keypressHandler, true);

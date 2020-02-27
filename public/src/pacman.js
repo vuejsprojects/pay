@@ -356,8 +356,8 @@ const getPac = function (context, prizes, pac) {
         stopBeastTimer: function() {
             clearInterval(this.beastSetInterval);
         },
-        startGameTimer: function(setGameTimer) {
-            this.gameTimer = setGameTimer();
+        startGameTimer: function(setGameTimer, from) {
+            this.gameTimer = setGameTimer(from);
         },
         stopGameTimer: function() {
             clearInterval(this.gameTimer);
@@ -382,7 +382,6 @@ const getPac = function (context, prizes, pac) {
         reactivatePac: function() {
             this.pacAlive = true;
             this.initialPosition(CANVAS_CENTER);
-            //window.removeEventListener(this.capturedEvent, this.eventHandler, true);
         },
         isPacAlive: function() {
             return this.pacAlive;

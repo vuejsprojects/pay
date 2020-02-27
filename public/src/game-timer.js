@@ -1,15 +1,18 @@
-function setincrementGameTimer() {
-    counter = 0;
+function setincrementGameTimer(from) {
+    counter = from;
     return function() {
         counter +=1;
         document.getElementById('game-timer').innerText = this.counter;
     }
-}
-
-const setGameTimer = function() {
-    return function() {
-        const theGameTimer = setInterval(setincrementGameTimer(), 1000);
-        return theGameTimer;
-    }
 };
-export { setGameTimer};
+
+const getElasedTime = function() {
+    return parseInt(document.getElementById('game-timer').innerText);
+};
+
+const setGameTimer = function(from) {
+    const theGameTimer = setInterval(setincrementGameTimer(from), 1000);
+    return theGameTimer;
+};
+
+export { setGameTimer, getElasedTime};
