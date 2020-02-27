@@ -126,6 +126,9 @@ const getPac = function (context, prizes, pac) {
             this.beast = true;
             this.color = BEAST_COLOR;
         },
+        isBeast: function() {
+            return this.beast;
+        },
         initialPosition: function (position, shape) {
             this.myShape = shape || this.myShape;
             const center = centerPacCoordinates(this.myShape, position);
@@ -161,47 +164,7 @@ const getPac = function (context, prizes, pac) {
             this.posY = newPosition.position.posY;
         },
         draw: function(direction) {
-            const that = this;
-            // TODO reuse drawline in parcours
-            const drawLine = function(that, width, color, dashed) {
-                context.beginPath();
-                context.lineWidth = width;
-                context.setLineDash(dashed || []);
-                context.strokeStyle = color; 
-                const c = getLineCoordinateFromTo(that, direction);
-                context.moveTo(c.from.x, c.from.y);
-                context.lineTo(c.to.x, c.to.y);
-                context.stroke();
-            };
-            const getLineCoordinateFromTo = function(that, direction) {
-                return {
-                    from: {
-                        x: direction === RIGHT ? that.prevPosX : direction === LEFT ? that.prevPosX + PAC_WIDTH : 
-                        direction === UP ? that.prevPosX + (PAC_WIDTH/2) : that.prevPosX + (PAC_WIDTH/2),
-                        y: that.prevPosY +(PAC_HEIGHT/2)
-                    },
-                    to: {
-                        x: direction === RIGHT ? that.posX : direction === LEFT ? that.posX + PAC_WIDTH:
-                        direction === UP ? that.posX + (PAC_WIDTH/2) : that.posX + (PAC_WIDTH/2),
-                        y: that.posY +(PAC_HEIGHT/2)
-                    }
-                }
-            };
-            if (this.beast) {
-                // context.fillStyle = this.color;
-                // context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
-                this.drawShape();
-
-                // context.fillStyle = BACKGROUND;
-                // context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
-
-                // drawLine(that, LINE_WIDTH, 'green', []);
-    
-                // drawLine(that, 2, LINE_COLOR, [2,2]);
-            }
-            else {
-                this.drawShape();
-            }
+            this.drawShape();
         },
         drawShape: function() {
             if (this.myShape === ARC) {
@@ -209,14 +172,14 @@ const getPac = function (context, prizes, pac) {
                     this.drawPreviousPosition();
                     // TODO why previousPos
                     const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
-                    const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.beast);
+                    const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.isBeast());
                     if (prizeIndex !== undefined) {
-                        if( this.beast) {
+                        if( this.isBeast()) {
                             prizes.redrawPrize(prizeIndex);
                         }
                         else {
                             this.incrementCounter(5);
-                            if (prizes.areAllLocationsInactive() && !this.beast) {
+                            if (prizes.areAllLocationsInactive() && !this.isBeast()) {
                                 this.gameWon();
                             }
                             else {
@@ -231,7 +194,7 @@ const getPac = function (context, prizes, pac) {
                     }
                 }
 
-                if (this.beast){
+                if (this.isBeast()){
                     if (this.posX === pac.posX && this.posY === pac.posY) {
                         if (pac.hasSpecialPower()) {
                             this.deactiveBeast();
@@ -363,12 +326,6 @@ const getPac = function (context, prizes, pac) {
             clearInterval(this.gameTimer);
         },
         // TODO move all beast method to beast
-        deactiveBeast: function() {
-            this.beastActive = false;
-        },
-        activeBeast: function() {
-            this.beastActive = true;
-        },
         saveKeyDownEventHandler: function(event, keypressHandler) {
             this.capturedEvent = event;
             this.eventHandler = keypressHandler;

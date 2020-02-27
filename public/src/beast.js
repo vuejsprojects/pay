@@ -119,6 +119,13 @@ const getBeast = function(context, prizes, pac) {
         return this.beastActive;
     };
 
+    beast.deactiveBeast = function() {
+        this.beastActive = false;
+    }
+    beast.activeBeast = function() {
+        this.beastActive = true;
+    }
+
     return beast;
 };
 
