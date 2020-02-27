@@ -111,12 +111,16 @@ const getPac = function (context, prizes, pac) {
         DOWN: DOWN,
         posX: 0,
         posY: 0,
+        prevPosX: 0,
+        prevPosY: 0,
         beast: false,
         color: PAC_COLOR,
         myShape: ARC,
         specialPower: false,
         counter: 0,
         pacAlive: true,
+        powerTimeout: undefined,
+        beastsManager: undefined,
 
         iAmBeast: function() {
             this.beast = true;
@@ -127,13 +131,15 @@ const getPac = function (context, prizes, pac) {
             const center = centerPacCoordinates(this.myShape, position);
             this.posX = center.posX;
             this.posY = center.posY;
+            this.prevPosX = this.posX,
+            this.prevPosY = this.posY,
             this.drawShape();
             // context.fillStyle = this.color;
             // context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
             this.displayCounter();
         },
-        displayCounter: function() {
-            document.getElementById('counter').innerText = this.counter;
+        setBeastsManager: function(beastsManager) {
+            this.beastsManager = beastsManager;
         },
         move: function (event, parcours) {
             const direction = event.keyCode;
@@ -201,35 +207,53 @@ const getPac = function (context, prizes, pac) {
             if (this.myShape === ARC) {
                 if (this.prevPosX && this.prevPosY) {
                     this.drawPreviousPosition();
-
+                    // TODO why previousPos
                     const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
                     const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.beast);
-                    if (prizeIndex) {
+                    if (prizeIndex !== undefined) {
                         if( this.beast) {
                             prizes.redrawPrize(prizeIndex);
                         }
                         else {
+                            this.incrementCounter(5);
                             if (prizes.areAllLocationsInactive() && !this.beast) {
                                 this.gameWon();
                             }
                             else {
                                 this.acquireSpecialPower();
-                                this.incrementCounter(5);
                                 this.color = BOOST_COLOR;
-                                setTimeout(this.prepareEndOfSpecialPower(), 10000);
+                                if (this.powerTimeout) {
+                                    clearTimeout(this.powerTimeout);
+                                }
+                                this.powerTimeout = setTimeout(this.prepareEndOfSpecialPower(), 10000);
                             }
                         }
                     }
                 }
 
-                if (this.beast && this.posX === pac.posX && this.posY === pac.posY) {
-                    if (pac.hasSpecialPower()) {
-                        this.deactiveBeast();
-                        pac.incrementCounter(10);
-                        return;
+                if (this.beast){
+                    if (this.posX === pac.posX && this.posY === pac.posY) {
+                        if (pac.hasSpecialPower()) {
+                            this.deactiveBeast();
+                            pac.incrementCounter(10);
+                            return;
+                        }
+                        else {
+                            pac.gameOver();
+                        }
                     }
-                    else {
-                        pac.gameOver();
+                }
+                else {
+                    const matchingBeast = this.beastsManager.matchBeastPosition(this);
+                    if (matchingBeast) {
+                        if (this.hasSpecialPower()) {
+                            matchingBeast.deactiveBeast();
+                            this.incrementCounter(10);
+                            return;
+                        }
+                        else {
+                            this.gameOver();
+                        }
                     }
                 }
 
@@ -283,25 +307,37 @@ const getPac = function (context, prizes, pac) {
             this.drawCurrentPosition();
             this.specialPower = false;
         },
+        displayCounter: function() {
+            document.getElementById('counter').innerText = this.counter;
+        },
         incrementCounter: function(inc) {
             this.counter += inc;
+            this.displayCounter();
+        },
+        resetCounter: function() {
+            this.counter = 0;
             this.displayCounter();
         },
         gameOver: function() {
             this.displayGameOverMessage();
             this.stopGame();
-            document.getElementById("start-button").disabled = false;
+            this.deactivatePac();
+            // TODO put all the document stuff in some object pass as context thru getPac
+            const startButton = document.getElementById("start-button")
+            startButton.disabled = false;
+            startButton.innerText = 'Start New Game';
         },
         gameWon:  function() {
             this.displayGameWonMessage();
             this.stopGame();
+            this.endOfSpecialPower();
             const startButton = document.getElementById("start-button")
             startButton.disabled = false;
-            startButton.innerText = 'Start New Game'
+            startButton.innerText = 'Next Level';
         },
         stopGame: function() {
             this.stopBeastTimer();
-            this.deactivatePac();
+            this.stopCapturingPacMotion();
             this.stopGameTimer();
         },
         displayGameOverMessage: function() {
@@ -326,16 +362,22 @@ const getPac = function (context, prizes, pac) {
         stopGameTimer: function() {
             clearInterval(this.gameTimer);
         },
+        // TODO move all beast method to beast
         deactiveBeast: function() {
             this.beastActive = false;
+        },
+        activeBeast: function() {
+            this.beastActive = true;
         },
         saveKeyDownEventHandler: function(event, keypressHandler) {
             this.capturedEvent = event;
             this.eventHandler = keypressHandler;
         },
         deactivatePac: function() {
-            window.removeEventListener(this.capturedEvent, this.eventHandler, true);
             this.pacAlive = false;
+        },
+        stopCapturingPacMotion: function() {
+            document.removeEventListener(this.capturedEvent, this.eventHandler, true);
         },
         reactivatePac: function() {
             this.pacAlive = true;

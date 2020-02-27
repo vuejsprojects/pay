@@ -110,7 +110,15 @@ const getBeast = function(context, prizes, pac) {
             posY: point.getY()
         }
     };
-    
+
+    beast.matchPosition =  function(pac) {
+        return this.posX === pac.posX && this.posY === pac.posY;
+    };
+
+    beast.isBeastActive = function() {
+        return this.beastActive;
+    };
+
     return beast;
 };
 

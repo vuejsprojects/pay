@@ -2,6 +2,7 @@ import { getCanvas} from './canvas.js';
 import { getPac } from './pacman.js';
 import { parcours } from './parcours.js';
 import { getBeast } from './beast.js';
+import { getBeastsManager } from './beastsManager.js'
 import { CANVAS_CENTER } from './point.js';
 import { prizes } from './prizes.js'
 import { setGameTimer} from './game-timer.js'
@@ -23,29 +24,13 @@ const pac = getPac(context, prizesSet);
 parcours.build();
 parcours.display(context);
 
+const beastsManager = getBeastsManager();
+beastsManager.addBeast(context, prizesSet, pac, parcours); // one or more
+pac.setBeastsManager(beastsManager);
+
 pac.initialPosition(CANVAS_CENTER);
 
-const beasts = [
-    getBeast(context, prizesSet, pac)
-];
-beasts.forEach(beast => {
-    beast.chooseLine(parcours);
-    beast.iAmBeast();
-    beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));
-});
-
 prizesSet.sprinkle(parcours).display();
-
-const setBeastWalkTimer = function () {
-    return function() {
-        const beastWalkTimer = setInterval(function() {
-            beasts.forEach(beast => {
-                beast.walkTheLine();
-            });
-        },50);
-        return beastWalkTimer;
-    }
-}
 
 const boardLoader = function() {
     let boardCounter = 0;
@@ -54,34 +39,31 @@ const boardLoader = function() {
         if (boardCounter > 1) {
             if (pac.isPacAlive()) {
                 // add beast
-                const beast = getBeast(context, prizesSet, pac);
-                beast.chooseLine(parcours);
-                beast.iAmBeast();
-                beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));
-                beasts.push(beast);
-                // redraw parcours
-                canvas.redrawBackgound();
-                parcours.display(context);
-                // reactivate prizes
-                prizesSet.display();
-                pac.reactivatePac();
+                beastsManager.addBeast(context, prizesSet, pac, parcours);
+                // elapsed time should not start from 0
             }
             else {
-                // game over happened so reset pac
-                // put back the prizes
-                // reset time elpase and points
-                pac.reactivatePac();
+                beastsManager.removeBeasts();
+                beastsManager.addBeast(context, prizesSet, pac, parcours);
+                pac.resetCounter();
             }
+            beastsManager.activateAllBeasts();
+            canvas.redrawBackground();
+            parcours.display(context);
+            // reactivate prizes
+            prizesSet.display();
+            pac.reactivatePac();
         }
         document.getElementById("start-button").disabled = true;
+        canvas.getFocus();
 
-        const beastTimer = setBeastWalkTimer();
+        const beastTimer = beastsManager.setBeastWalkTimer();
         pac.startBeastTimer(beastTimer);
 
         pac.startGameTimer(setGameTimer());
 
         const keypressHandler = getKeypressHandler(pac, parcours);
-        window.addEventListener("keydown", keypressHandler, true);
+        document.addEventListener("keydown", keypressHandler, true);
         pac.saveKeyDownEventHandler("keydown", keypressHandler);
     }
 }

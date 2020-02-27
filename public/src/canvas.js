@@ -10,24 +10,31 @@ import {
 
 const getCanvas = function () {
     const canvas = {};
-    canvas.initCanvas = function (height, width) {
+    canvas.initCanvas = function () {
         const canvas = document.createElement("canvas");
+        canvas.setAttribute("id", 'board-game');
+        this.canvas = canvas;
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
         document.body.appendChild(canvas);
-        const context = canvas.getContext("2d");
-        context.fillStyle = BACKGROUND;
-        context.fillRect(CANVAS_WIDTH_ORIG, CANVAS_HEIGHT_ORIG, canvas.width, canvas.height);
-        context.lineWidth = LINE_WIDTH;
-        context.strokeStyle = LINE_COLOR;
-        return context;
+        this.context = canvas.getContext("2d");
+        this.context.fillStyle = BACKGROUND;
+        this.context.fillRect(CANVAS_WIDTH_ORIG, CANVAS_HEIGHT_ORIG, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.context.lineWidth = LINE_WIDTH;
+        this.context.strokeStyle = LINE_COLOR;
+        return this.context;
     };
-    canvas.redrawBackgound = function() {
-        context.fillStyle = BACKGROUND;
-        context.fillRect(CANVAS_WIDTH_ORIG, CANVAS_HEIGHT_ORIG, canvas.width, canvas.height);
-        context.lineWidth = LINE_WIDTH;
-        context.strokeStyle = LINE_COLOR;
+    canvas.redrawBackground = function() {
+        this.context.fillStyle = BACKGROUND;
+        this.context.fillRect(CANVAS_WIDTH_ORIG, CANVAS_HEIGHT_ORIG, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.context.lineWidth = LINE_WIDTH;
+        this.context.strokeStyle = LINE_COLOR;
     };
+    canvas.getFocus = function() {
+        this.canvas.setAttribute('tabindex','0');
+        this.canvas.focus();
+    };
+
     return canvas;
 }
 export {getCanvas};
