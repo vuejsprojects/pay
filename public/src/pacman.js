@@ -22,17 +22,16 @@ import {
     GAME_OVER_COLOR
 } from './settings.js';
 import { CANVAS_CENTER } from './point.js';
-import { getDocManager } from './docManager.js'
+import { getDomManager } from './domManager.js'
+import { startButton } from './startButton.js'
 
 
-const docMgr = getDocManager();
+const domMgr = getDomManager();
 //
 // getPac is called by beast as well in this case it need a reference to pac
 //
 const getPac = function (context, prizes, pac) {
 
-    // TODO square would have to be recentered before end so (PAC_WIDH / 2) on posX and (PAC_HEIGHT / 2)
-    // on posY not needed to readjust position
     const getRelativePosition = function( position) {
         
         const relativePosition = {
@@ -274,7 +273,7 @@ const getPac = function (context, prizes, pac) {
             this.specialPower = false;
         },
         displayCounter: function() {
-            docMgr.setValue('counter', this.counter);
+            domMgr.setValue('counter', this.counter);
         },
         incrementCounter: function(inc) {
             this.counter += inc;
@@ -302,8 +301,8 @@ const getPac = function (context, prizes, pac) {
             this.stopGameTimer();
         },
         setStartButtonTo: function(label) {
-            docMgr.enable("start-button");
-            docMgr.setValue("start-button", label);
+            startButton.enable();
+            startButton.setValue(label);
         },
         displayGameOverMessage: function() {
             context.font = '48px serif';
@@ -327,7 +326,6 @@ const getPac = function (context, prizes, pac) {
         stopGameTimer: function() {
             clearInterval(this.gameTimer);
         },
-        // TODO move all beast method to beast
         saveKeyDownEventHandler: function(event, keypressHandler) {
             this.capturedEvent = event;
             this.eventHandler = keypressHandler;
@@ -336,7 +334,7 @@ const getPac = function (context, prizes, pac) {
             this.pacAlive = false;
         },
         stopCapturingPacMotion: function() {
-            docMgr.removeEventListener(this.capturedEvent, this.eventHandler);
+            domMgr.removeEventListener(this.capturedEvent, this.eventHandler);
         },
         reactivatePac: function() {
             this.pacAlive = true;

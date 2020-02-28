@@ -6,10 +6,11 @@ import { getBeastsManager } from './beastsManager.js'
 import { CANVAS_CENTER } from './point.js';
 import { prizes } from './prizes.js'
 import { setGameTimer, getElasedTime} from './game-timer.js'
-import { getDocManager } from './docManager.js'
+import { getDomManager } from './domManager.js'
+import { startButton } from './startButton.js'
 
 
-const docManager = getDocManager();
+const domManager = getDomManager();
 const getKeypressHandler = function (pac, parcours) {
     const func = function () {
         pac.move(event, parcours);
@@ -17,7 +18,7 @@ const getKeypressHandler = function (pac, parcours) {
     return func;
 }
 
-const canvas = getCanvas(docManager);
+const canvas = getCanvas(domManager);
 const context = canvas.initCanvas();
 const prizesSet = prizes(context);
 
@@ -63,8 +64,8 @@ const boardLoader = function() {
             pac.reactivatePac();
         }
 
-        docManager.setValue("board-counter", gameLevel);
-        docManager.disable("start-button");
+        domManager.setValue("board-counter", gameLevel);
+        startButton.disable();
         canvas.getFocus();
 
         const beastTimer = beastsManager.setBeastWalkTimer();
@@ -76,12 +77,11 @@ const boardLoader = function() {
         pac.startGameTimer(setGameTimer, gameTimerStartingTime);
 
         const keypressHandler = getKeypressHandler(pac, parcours);
-        docManager.addEventListener("keydown", keypressHandler);
+        domManager.addEventListener("keydown", keypressHandler);
         pac.saveKeyDownEventHandler("keydown", keypressHandler);
     }
 }
 
-const startGame = boardLoader();
-// TODO regroup all action on start-button in a module
-docManager.setFocus("start-button");
-docManager.addEventListener("click", startGame, "start-button");
+const loader = boardLoader();
+startButton.setFocus();
+startButton.on("click", loader);

@@ -1,18 +1,18 @@
-import { getDocManager } from './docManager.js';
+import { getDomManager } from './domManager.js';
 
 
-const docMgr = getDocManager();
+const domMgr = getDomManager();
 
 function setincrementGameTimer(from) {
     let counter = from;
     return function() {
         counter +=1;
-        docMgr.setValue('game-timer', counter);
+        domMgr.setValue('game-timer', counter);
     }
 };
 
 const getElasedTime = function() {
-    return docMgr.getIntValue('game-timer');
+    return domMgr.getIntValue('game-timer');
 };
 
 const setGameTimer = function(from) {

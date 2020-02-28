@@ -1,5 +1,5 @@
-const getDocManager = function() {
-    const docMgr = {
+const getDomManager = function() {
+    const domMgr = {
         createCanvas: function(name) {
             const canvas = document.createElement("canvas");
             canvas.setAttribute("id", name);
@@ -37,7 +37,7 @@ const getDocManager = function() {
         }
     };
 
-    return docMgr;
+    return domMgr;
 }
 
-export { getDocManager };
+export { getDomManager };

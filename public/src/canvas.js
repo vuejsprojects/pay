@@ -9,10 +9,10 @@ import {
 } from './settings.js';
 
 
-const getCanvas = function (docManager) {
+const getCanvas = function (domManager) {
     const canvas = {};
     canvas.initCanvas = function () {
-        this.canvas = docManager.createCanvas( 'board-game');
+        this.canvas = domManager.createCanvas( 'board-game');
         this.canvas.width = CANVAS_WIDTH;
         this.canvas.height = CANVAS_HEIGHT;
         this.context = this.canvas.getContext("2d");

@@ -1,6 +1,9 @@
 import { point } from './point.js';
 import {
     BORDER_COLOR,
+    DASH_LINE_WIDTH,
+    DASH_LINE_COLOR,
+    DASH_SIZE,
     LINE_WIDTH,
     LINE_COLOR
 } from './settings.js';
@@ -61,9 +64,9 @@ const parcours = {
     displayToFix: function(context) {
         this.drawBorders(context); // need to fix the border and remove the fudge in display(): tip see pb by not showing parcours
         context.beginPath();
-        context.lineWidth = 2
-        context.setLineDash([2,2]);
-        context.strokeStyle = LINE_COLOR;
+        context.lineWidth = DASH_LINE_WIDTH
+        context.setLineDash(DASH_SIZE);
+        context.strokeStyle = DASH_LINE_COLOR;
         this.layout.forEach(line => {
             context.moveTo(line.start.getX(), line.start.getY());
             context.lineTo(line.end.getX(), line.end.getY());
@@ -76,15 +79,15 @@ const parcours = {
             context.beginPath();
             context.lineWidth = LINE_WIDTH;
             context.setLineDash([]);
-            context.strokeStyle = 'green';  // TODO
+            context.strokeStyle = LINE_COLOR;
             context.moveTo(line.start.getX(), line.start.getY());
             context.lineTo(line.end.getX(), line.end.getY());
             context.stroke();
 
             context.beginPath();
-            context.lineWidth = 2;  // TODO
-            context.setLineDash([2,2]);  // TODO
-            context.strokeStyle = LINE_COLOR;
+            context.lineWidth = DASH_LINE_WIDTH;
+            context.setLineDash(DASH_SIZE);
+            context.strokeStyle = DASH_LINE_COLOR;
             context.moveTo(line.start.getX(), line.start.getY());
             context.lineTo(line.end.getX(), line.end.getY());
             context.stroke();
