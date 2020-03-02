@@ -1,9 +1,9 @@
 const getDomManager = function() {
     const domMgr = {
-        createCanvas: function(name) {
+        createCanvas: function(name, id) {
             const canvas = document.createElement("canvas");
-            canvas.setAttribute("id", name);
-            document.body.appendChild(canvas);
+            canvas.setAttribute("id", id);
+            document.getElementById (name).appendChild(canvas);
             return canvas;
         },
         addEventListener: function(event, handler, entity) {

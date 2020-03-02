@@ -1,20 +1,40 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Play</title>
-    <!--link rel="stylesheet" type="text/css" href="./pac.css"-->
+    <link rel="stylesheet" type="text/css" href="./pac.css">
 </head>
+
 <body>
-    <script type="module"  src="./src/index.js">
+    <script type="module" src="./src/index.js">
 
     </script>
-    <div id="board">
-        <button  id="start-button">Start New Game</button>
-        <h2>
-            Level: <span id="board-counter">1</span>&nbsp;
-            Points: <span id="counter"></span>&nbsp;
-            Elapsed time: <span id='game-timer'>0</span> seconds
-        </h2>
+    <div class="c-pacoman">
+        <div class="c-game">
+            <div class="c-intro">Click Start to play with PacoMan</div>
+            <div class="c-board" id="board"></div>
+            <div class="c-start">
+                <button id="start-button">Start New Game</button>
+            </div>
+            <div class="c-level">
+                <h2>
+                    Level: <span id="board-counter">1</span>&nbsp;
+                </h2>
+            </div>
+            <div class="c-points">
+                <h2>
+                    Points: <span id="counter"></span>&nbsp;
+                </h2>
+            </div>
+            <div class="c-time">
+                <h2>
+                    Elapsed time: <span id='game-timer'>0</span> seconds
+                </h2>
+            </div>
+        </div>
     </div>
 </body>
+</body>
+
 </html>

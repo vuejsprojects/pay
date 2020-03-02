@@ -243,13 +243,29 @@ const getPac = function (context, prizes, pac) {
         drawPreviousPosition: function() {
             const x = this.prevPosX;
             const y =  this.prevPosY;
-            const color = 'green'; // TODO BACKGROUND;
+            const color = LINE_COLOR;
             this.drawPosition(x, y, color);
         },
         drawPosition: function(x, y, color) {
             context.beginPath();
             context.fillStyle = color;
-            context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
+            if (this.beast || 
+                color === LINE_COLOR) {
+                context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
+            }
+            else {
+                if ( color === PAC_COLOR || color === BOOST_COLOR) {
+                    if (this.openMouth) {
+                        context.arc(x, y, PAC_WIDTH / 2, 0, 1.5 * Math.PI);
+                        context.lineTo(x, y);
+                        this.openMouth = false;
+                    }
+                    else {
+                        context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
+                        this.openMouth = true;
+                    }
+                }
+            }
             context.fill();
             context.closePath();
 
