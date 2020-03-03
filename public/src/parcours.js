@@ -18,18 +18,18 @@ const line = function(start, end, nobeast) {
 
 const parcours = {
     layout: [
-        line(point(0, 0), point(0, 190), true),
-        line(point(0, 190), point(190, 190)),
-        line(point(190, 0), point(190, 190)),
-        line(point(150, 120), point(150, 190)),
-        line(point(100, 120), point(190, 120)),
-        line(point(100, 120), point(100, 190)),
+        line(point(0, 0), point(0, 180), true),
+        line(point(0, 180), point(180, 180)),
+        line(point(180, 0), point(180, 180)),
+        line(point(140, 120), point(140, 180)),
+        line(point(100, 120), point(180, 120)),
+        line(point(100, 120), point(100, 180)),
         line(point(0, 120), point(100, 120)),
         line(point(100, 20), point(100, 120)),
         line(point(40, 80), point(160, 80)),
-        line(point(0, 0), point(190, 0), true),
-        line(point(50, 0), point(50, 30)),
-        line(point(0, 30), point(50, 30))
+        line(point(0, 0), point(180, 0), true),
+        line(point(40, 0), point(40, 30)),
+        line(point(0, 30), point(40, 30))
     ],
     build: function() {
         const mirrorPoints = function(aLine) {
