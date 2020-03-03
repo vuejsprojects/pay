@@ -56,6 +56,7 @@ const boardLoader = function() {
                 pac.resetCounter();
                 newTimer = true;
             }
+            pac.resetRoundOver();
             beastsManager.activateAllBeasts();
             canvas.redrawBackground();
             parcours.display(context);

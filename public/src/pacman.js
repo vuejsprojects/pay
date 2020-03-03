@@ -106,6 +106,24 @@ const getPac = function (context, prizes, pac) {
         return center
     };
 
+    const sound = function (src) {
+        const audio = document.createElement("audio");
+        audio.src = src;
+        audio.setAttribute("preload", "auto");
+        audio.setAttribute("controls", "none");
+        audio.style.display = "none";
+        document.body.appendChild(audio);
+        return {
+            play: function(){
+                audio.play();
+            },
+            stop: function(){
+                audio.pause();
+            }
+        };
+    };
+    
+
     return {
         LEFT: LEFT,
         RIGHT: RIGHT,
@@ -123,6 +141,13 @@ const getPac = function (context, prizes, pac) {
         pacAlive: true,
         powerTimeout: undefined,
         beastsManager: undefined,
+        roundOver: false,
+        beep: sound("src/sounds/hyper_short_beep.mp3"),
+        reaper: sound("src/sounds/reaper.mp3"),
+        crunch: sound("src/sounds/short_crunch.mp3"),
+        bell: sound("src/sounds/bell.mp3"),
+        won: sound("src/sounds/won.mp3"),
+        one_less_beast: sound("src/sounds/one_less_beast.mp3"),
 
         iAmBeast: function() {
             this.beast = true;
@@ -180,6 +205,7 @@ const getPac = function (context, prizes, pac) {
                             prizes.redrawPrize(prizeIndex);
                         }
                         else {
+                            this.crunch.play();
                             this.incrementCounter(5);
                             if (prizes.areAllLocationsInactive() && !this.isBeast()) {
                                 this.gameWon();
@@ -200,6 +226,7 @@ const getPac = function (context, prizes, pac) {
                     if (this.posX === pac.posX && this.posY === pac.posY) {
                         if (pac.hasSpecialPower()) {
                             this.deactiveBeast();
+                            this.one_less_beast.play();
                             pac.incrementCounter(10);
                             return;
                         }
@@ -254,6 +281,9 @@ const getPac = function (context, prizes, pac) {
                 context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
             }
             else {
+                if (!this.isRoundOver()) {
+                    this.makeSound();
+                }
                 if ( color === PAC_COLOR || color === BOOST_COLOR) {
                     if (this.openMouth) {
                         context.arc(x, y, PAC_WIDTH / 2, 0, 1.5 * Math.PI);
@@ -300,16 +330,20 @@ const getPac = function (context, prizes, pac) {
             this.displayCounter();
         },
         gameOver: function() {
+            this.reaper.play();
             this.displayGameOverMessage();
             this.stopGame();
             this.deactivatePac();
             this.setStartButtonTo('Start New Game');
+            this.setRoundOver();
         },
         gameWon:  function() {
+            this.won.play();
             this.displayGameWonMessage();
             this.stopGame();
             this.endOfSpecialPower();
             this.setStartButtonTo('Next Level');
+            this.setRoundOver();
         },
         stopGame: function() {
             this.stopBeastTimer();
@@ -358,6 +392,18 @@ const getPac = function (context, prizes, pac) {
         },
         isPacAlive: function() {
             return this.pacAlive;
+        },
+        makeSound: function() {
+            this.beep.play();
+        },
+        setRoundOver: function() {
+            this.roundOver = true;
+        },
+        resetRoundOver: function() {
+            this.roundOver = false;
+        },
+        isRoundOver: function() {
+            return this.roundOver;
         }
     }
 }
