@@ -28,8 +28,8 @@ const parcours = {
         line(point(100, 20), point(100, 120)),
         line(point(40, 80), point(160, 80)),
         line(point(0, 0), point(180, 0), true),
-        line(point(40, 0), point(40, 30)),
-        line(point(0, 30), point(40, 30))
+        line(point(40, 0), point(40, 40), true),
+        line(point(0, 40), point(40, 40), true)
     ],
     build: function() {
         const mirrorPoints = function(aLine) {
