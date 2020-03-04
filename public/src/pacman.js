@@ -146,7 +146,7 @@ const getPac = function (context, prizes, pac) {
         reaper: sound("src/sounds/reaper.mp3"),
         crunch: sound("src/sounds/short_crunch.mp3"),
         bell: sound("src/sounds/bell.mp3"),
-        won: sound("src/sounds/won.mp3"),
+        won: sound("src/sounds/won_subdued.mp3"),
         one_less_beast: sound("src/sounds/one_less_beast.mp3"),
 
         iAmBeast: function() {
