@@ -1,5 +1,8 @@
 const getDomManager = function() {
     const domMgr = {
+        getElementById: function(id) {
+            return document.getElementById(id);
+        },
         createCanvas: function(name, id) {
             const canvas = document.createElement("canvas");
             canvas.setAttribute("id", id);

@@ -31,6 +31,17 @@ const domMgr = getDomManager();
 // getPac is called by beast as well in this case it need a reference to pac
 //
 const getPac = function (context, prizes, pac) {
+    const openMouthimages = {};
+    openMouthimages[UP] = [domMgr.getElementById('up'), domMgr.getElementById('up-red')];
+    openMouthimages[DOWN] = [domMgr.getElementById('down'), domMgr.getElementById('down-red')];
+    openMouthimages[LEFT] =  [domMgr.getElementById('left'), domMgr.getElementById('left-red')];
+    openMouthimages[RIGHT] = [domMgr.getElementById('right'), domMgr.getElementById('right-red')];
+    
+    const closedMouthimages = {};
+    closedMouthimages[PAC_COLOR] = domMgr.getElementById('full');
+    closedMouthimages[BOOST_COLOR] =  domMgr.getElementById('full-red');
+
+
 
     const getRelativePosition = function( position) {
         
@@ -139,6 +150,7 @@ const getPac = function (context, prizes, pac) {
         specialPower: false,
         counter: 0,
         pacAlive: true,
+        openMouth: false,
         powerTimeout: undefined,
         beastsManager: undefined,
         roundOver: false,
@@ -164,8 +176,6 @@ const getPac = function (context, prizes, pac) {
             this.prevPosX = this.posX,
             this.prevPosY = this.posY,
             this.drawShape();
-            // context.fillStyle = this.color;
-            // context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
             this.displayCounter();
         },
         setBeastsManager: function(beastsManager) {
@@ -179,7 +189,7 @@ const getPac = function (context, prizes, pac) {
             const wishedPosition = getWishedPosition(that, direction);
             if (isMoveValid(wishedPosition, parcours)) {
                 this.setNewPosition(wishedPosition);
-                this.draw();
+                this.draw(direction);
                 return true;
             }
             else {
@@ -191,9 +201,9 @@ const getPac = function (context, prizes, pac) {
             this.posY = newPosition.position.posY;
         },
         draw: function(direction) {
-            this.drawShape();
+            this.drawShape(direction);
         },
-        drawShape: function() {
+        drawShape: function(direction) {
             if (this.myShape === ARC) {
                 if (this.prevPosX && this.prevPosY) {
                     this.drawPreviousPosition();
@@ -249,9 +259,9 @@ const getPac = function (context, prizes, pac) {
                     }
                 }
 
-                this.drawCurrentPosition()
+                this.drawCurrentPosition(direction)
             }
-            else {
+            else {  //TODO dead code
                 context.fillStyle = this.color;
                 context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
                 if (this.prevPosX && this.prevPosY) {
@@ -261,11 +271,11 @@ const getPac = function (context, prizes, pac) {
             }
 
         },
-        drawCurrentPosition: function() {
+        drawCurrentPosition: function(direction) {
             const x = this.posX;
             const y =  this.posY;
             const color = this.color;
-            this.drawPosition(x, y, color);
+            this.drawPosition(x, y, color, direction);
         },
         drawPreviousPosition: function() {
             const x = this.prevPosX;
@@ -273,7 +283,38 @@ const getPac = function (context, prizes, pac) {
             const color = LINE_COLOR;
             this.drawPosition(x, y, color);
         },
-        drawPosition: function(x, y, color) {
+        drawPosition: function(x, y, color, direction) {
+            context.beginPath();
+            context.fillStyle = color;
+            if (this.beast || 
+                color === LINE_COLOR) {
+                context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
+            }
+            else {
+                if (!this.isRoundOver()) {
+                    this.makeSound();
+                }
+                this.drawImage(x, y, color, direction, this.openMouth);
+                this.openMouth = !this.openMouth;
+            }
+            context.fill();
+            context.closePath();
+        },
+        drawImage: function(x, y, color, direction, openMouth) {
+            const image = this.getImage(color, direction, openMouth);
+            context.drawImage(image, x - 10, y - 10);
+        },
+        getImage: function(color, direction, openMouth) {
+            if (openMouth) {
+                const selector = color === BOOST_COLOR ? 1 : 0;
+                return openMouthimages[direction][selector];
+            }
+            else {
+                return closedMouthimages[color];
+            }
+        },
+        // TODO remove drawPositionSav dead code
+        drawPositionSav: function(x, y, color, direction) {
             context.beginPath();
             context.fillStyle = color;
             if (this.beast || 
@@ -287,7 +328,7 @@ const getPac = function (context, prizes, pac) {
                 if ( color === PAC_COLOR || color === BOOST_COLOR) {
                     if (this.openMouth) {
                         context.arc(x, y, PAC_WIDTH / 2, 0, 1.5 * Math.PI);
-                        context.lineTo(x, y);
+                        context.lineTo(x, y); // TODO ???
                         this.openMouth = false;
                     }
                     else {
