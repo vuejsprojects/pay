@@ -177,7 +177,7 @@ const getPac = function (context, prizes, pac) {
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             this.openMouth = false;
-            this.drawShape();
+            this.draw();
             this.displayCounter();
         },
         setBeastsManager: function(beastsManager) {
@@ -203,75 +203,61 @@ const getPac = function (context, prizes, pac) {
             this.posY = newPosition.position.posY;
         },
         draw: function(direction) {
-            this.drawShape(direction);
-        },
-        drawShape: function(direction) {
-            if (this.myShape === ARC) {
-                if (this.prevPosX && this.prevPosY) {
-                    this.drawPreviousPosition();
-                    // TODO why previousPos
-                    const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
-                    const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.isBeast());
-                    if (prizeIndex !== undefined) {
-                        if( this.isBeast()) {
-                            prizes.redrawPrize(prizeIndex);
+            if (this.prevPosX && this.prevPosY) {
+                this.drawPreviousPosition();
+                // TODO why previousPos
+                const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
+                const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.isBeast());
+                if (prizeIndex !== undefined) {
+                    if( this.isBeast()) {
+                        prizes.redrawPrize(prizeIndex);
+                    }
+                    else {
+                        this.crunch.play();
+                        this.incrementCounter(5);
+                        if (prizes.areAllLocationsInactive() && !this.isBeast()) {
+                            this.gameWon();
                         }
                         else {
-                            this.crunch.play();
-                            this.incrementCounter(5);
-                            if (prizes.areAllLocationsInactive() && !this.isBeast()) {
-                                this.gameWon();
+                            this.acquireSpecialPower();
+                            this.color = BOOST_COLOR;
+                            if (this.powerTimeout) {
+                                clearTimeout(this.powerTimeout);
                             }
-                            else {
-                                this.acquireSpecialPower();
-                                this.color = BOOST_COLOR;
-                                if (this.powerTimeout) {
-                                    clearTimeout(this.powerTimeout);
-                                }
-                                this.powerTimeout = setTimeout(this.prepareEndOfSpecialPower(), 10000);
-                            }
+                            this.powerTimeout = setTimeout(this.prepareEndOfSpecialPower(), 10000);
                         }
                     }
-                }
-
-                if (this.isBeast()){
-                    if (this.posX === pac.posX && this.posY === pac.posY) {
-                        if (pac.hasSpecialPower()) {
-                            this.deactiveBeast();
-                            this.one_less_beast.play();
-                            pac.incrementCounter(10);
-                            return;
-                        }
-                        else {
-                            pac.gameOver();
-                        }
-                    }
-                }
-                else {
-                    const matchingBeast = this.beastsManager.matchBeastPosition(this);
-                    if (matchingBeast) {
-                        if (this.hasSpecialPower()) {
-                            matchingBeast.deactiveBeast();
-                            this.incrementCounter(10);
-                            return;
-                        }
-                        else {
-                            this.gameOver();
-                        }
-                    }
-                }
-
-                this.drawCurrentPosition(direction)
-            }
-            else {  //TODO dead code
-                context.fillStyle = this.color;
-                context.fillRect(this.posX, this.posY, PAC_WIDTH, PAC_HEIGHT);
-                if (this.prevPosX && this.prevPosY) {
-                    context.fillStyle = BACKGROUND;
-                    context.fillRect(this.prevPosX, this.prevPosY, PAC_WIDTH, PAC_HEIGHT);
                 }
             }
 
+            if (this.isBeast()){
+                if (this.posX === pac.posX && this.posY === pac.posY) {
+                    if (pac.hasSpecialPower()) {
+                        this.deactiveBeast();
+                        this.one_less_beast.play();
+                        pac.incrementCounter(10);
+                        return;
+                    }
+                    else {
+                        pac.gameOver();
+                    }
+                }
+            }
+            else {
+                const matchingBeast = this.beastsManager.matchBeastPosition(this);
+                if (matchingBeast) {
+                    if (this.hasSpecialPower()) {
+                        matchingBeast.deactiveBeast();
+                        this.incrementCounter(10);
+                        return;
+                    }
+                    else {
+                        this.gameOver();
+                    }
+                }
+            }
+
+            this.drawCurrentPosition(direction)
         },
         drawCurrentPosition: function(direction) {
             const x = this.posX;
@@ -319,34 +305,6 @@ const getPac = function (context, prizes, pac) {
             else {
                 return closedMouthimages[color];
             }
-        },
-        // TODO remove drawPositionSav dead code
-        drawPositionSav: function(x, y, color, direction) {
-            context.beginPath();
-            context.fillStyle = color;
-            if (this.beast || 
-                color === LINE_COLOR) {
-                context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
-            }
-            else {
-                if (!this.isRoundOver()) {
-                    this.makeSound();
-                }
-                if ( color === PAC_COLOR || color === BOOST_COLOR) {
-                    if (this.openMouth) {
-                        context.arc(x, y, PAC_WIDTH / 2, 0, 1.5 * Math.PI);
-                        context.lineTo(x, y); // TODO ???
-                        this.openMouth = false;
-                    }
-                    else {
-                        context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
-                        this.openMouth = true;
-                    }
-                }
-            }
-            context.fill();
-            context.closePath();
-
         },
         acquireSpecialPower: function() {
             this.specialPower = true;
