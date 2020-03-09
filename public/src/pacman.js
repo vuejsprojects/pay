@@ -41,6 +41,7 @@ const getPac = function (context, prizes, pac) {
     closedMouthimages[PAC_COLOR] = domMgr.getElementById('full');
     closedMouthimages[BOOST_COLOR] =  domMgr.getElementById('full-red');
 
+    const beastImage = domMgr.getElementById('beast');
 
 
     const getRelativePosition = function( position) {
@@ -173,8 +174,9 @@ const getPac = function (context, prizes, pac) {
             const center = centerPacCoordinates(this.myShape, position);
             this.posX = center.posX;
             this.posY = center.posY;
-            this.prevPosX = this.posX,
-            this.prevPosY = this.posY,
+            this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.openMouth = false;
             this.drawShape();
             this.displayCounter();
         },
@@ -285,10 +287,13 @@ const getPac = function (context, prizes, pac) {
         },
         drawPosition: function(x, y, color, direction) {
             context.beginPath();
-            context.fillStyle = color;
-            if (this.beast || 
-                color === LINE_COLOR) {
+            if (color === LINE_COLOR) {
+                context.fillStyle = color;
                 context.arc(x, y, PAC_WIDTH / 2, 0, 2 * Math.PI);
+                context.fill();
+            }
+            else if (this.beast) {
+                this.drawImage(x, y, color, direction, this.openMouth, this.beast);
             }
             else {
                 if (!this.isRoundOver()) {
@@ -297,15 +302,17 @@ const getPac = function (context, prizes, pac) {
                 this.drawImage(x, y, color, direction, this.openMouth);
                 this.openMouth = !this.openMouth;
             }
-            context.fill();
             context.closePath();
         },
-        drawImage: function(x, y, color, direction, openMouth) {
-            const image = this.getImage(color, direction, openMouth);
+        drawImage: function(x, y, color, direction, openMouth, isBeast) {
+            const image = this.getImage(color, direction, openMouth, isBeast);
             context.drawImage(image, x - 10, y - 10);
         },
-        getImage: function(color, direction, openMouth) {
-            if (openMouth) {
+        getImage: function(color, direction, openMouth, isBeast) {
+            if (isBeast) {
+                return beastImage;
+            }
+            else if (openMouth) {
                 const selector = color === BOOST_COLOR ? 1 : 0;
                 return openMouthimages[direction][selector];
             }
@@ -382,6 +389,7 @@ const getPac = function (context, prizes, pac) {
             this.won.play();
             this.displayGameWonMessage();
             this.stopGame();
+            this.closeMouth();
             this.endOfSpecialPower();
             this.setStartButtonTo('Next Level');
             this.setRoundOver();
@@ -445,6 +453,9 @@ const getPac = function (context, prizes, pac) {
         },
         isRoundOver: function() {
             return this.roundOver;
+        },
+        closeMouth : function() {
+            this.openMouth = false;
         }
     }
 }
