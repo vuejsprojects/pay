@@ -30,6 +30,10 @@ const prizes = function(context) {
         await sleep(ms);
         console.log(ms, ' miliseconds later...');
     }
+    
+    const getRandomInt = function(range) {
+        return Math.floor(Math.random() * range);
+    };
 
     const prizesSet = {
         location: [],
@@ -44,7 +48,8 @@ const prizes = function(context) {
         },
         sprinkle: function(parcours) {
             // TODO put back all prizes
-            for (let i=0; i < 10 /*parcours.layout.length*/; i+=2) {
+            // for (let i=0; i < 10 /*parcours.layout.length*/; i+=2) {
+            for (let i=0; i < parcours.layout.length; i+=2) {
                 if (!parcours.layout[i].noBeastStart) {
                     if (this.isHorizontal(parcours.layout[i])) {
                         this.location.push(
@@ -57,7 +62,7 @@ const prizes = function(context) {
                                 color: colors[i % colors.length],
                                 line: parcours.layout[i],
                                 active: true,
-                                image: images[i % images.length]
+                                image: images[getRandomInt(images.length)]
                             }
                         );
                     }
@@ -72,7 +77,7 @@ const prizes = function(context) {
                                 color: colors[i % colors.length],
                                 line: parcours.layout[i],
                                 active: true,
-                                image: images[i % images.length]
+                                image: images[getRandomInt(images.length)]
                             }
                         );
                     }
