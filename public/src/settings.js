@@ -24,6 +24,7 @@ export const INC = 20;
 export const ARC = 'arc';
 export const RECT = 'rect';
 export const GAME_OVER_COLOR = 'white';
+export const WINDOW_ID = 'PACOMAN_WINDOW_ID';
 
 
 export const CANVAS_CENTER = {

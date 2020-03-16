@@ -1,3 +1,5 @@
+import { WINDOW_ID } from "./settings.js";
+
 const getDomManager = function() {
     const domMgr = {
         getElementById: function(id) {
@@ -11,7 +13,12 @@ const getDomManager = function() {
         },
         addEventListener: function(event, handler, entity) {
             if (entity) {
-                document.getElementById (entity).addEventListener(event, handler, true);
+                if (entity === WINDOW_ID) {
+                    window.addEventListener(event, handler, true);
+                }
+                else {
+                    document.getElementById (entity).addEventListener(event, handler, true);
+                }
             }
             else {
                 document.addEventListener(event, handler, true);
@@ -19,6 +26,7 @@ const getDomManager = function() {
         },
         removeEventListener: function(event, handler) {
             document.removeEventListener(event, handler, true);
+            window.removeEventListener(event, handler, true);
         },
         setFocus: function(entity) {
             document.getElementById (entity).focus();

@@ -123,11 +123,19 @@ const getPac = function (context, prizes, pac) {
         audio.src = src;
         audio.setAttribute("preload", "auto");
         audio.setAttribute("controls", "none");
+        audio.setAttribute("muted", "muted");
         audio.style.display = "none";
         document.body.appendChild(audio);
         return {
             play: function(){
-                audio.play();
+                console.log('Playing: ', audio.src);
+                try {
+                    audio.play();
+                }
+                catch(e) {
+                    // swallow: Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first
+                    console.log('Exception in play: ',e);
+                }
             },
             stop: function(){
                 audio.pause();
@@ -155,6 +163,7 @@ const getPac = function (context, prizes, pac) {
         powerTimeout: undefined,
         beastsManager: undefined,
         roundOver: false,
+        gameStarted: false,
         beep: sound("src/sounds/hyper_short_beep.mp3"),
         reaper: sound("src/sounds/reaper.mp3"),
         crunch: sound("src/sounds/short_crunch.mp3"),
@@ -282,7 +291,7 @@ const getPac = function (context, prizes, pac) {
                 this.drawImage(x, y, color, direction, this.openMouth, this.beast);
             }
             else {
-                if (!this.isRoundOver()) {
+                if (!this.isRoundOver() && this.isGameStarted()) {
                     this.makeSound();
                 }
                 this.drawImage(x, y, color, direction, this.openMouth);
@@ -321,7 +330,8 @@ const getPac = function (context, prizes, pac) {
         },
         endOfSpecialPower: function() {
             this.color = PAC_COLOR;
-            this.drawCurrentPosition();
+            // arbitrary UP other I need to store the direction in a property
+            this.drawCurrentPosition(UP);
             this.specialPower = false;
         },
         displayCounter: function() {
@@ -414,6 +424,12 @@ const getPac = function (context, prizes, pac) {
         },
         closeMouth : function() {
             this.openMouth = false;
+        },
+        setGameStarted : function() {
+            this.gameStarted = true;
+        },
+        isGameStarted : function() {
+            return this.gameStarted;
         }
     }
 }

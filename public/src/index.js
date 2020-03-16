@@ -8,12 +8,40 @@ import { prizes } from './prizes.js'
 import { setGameTimer, getElasedTime} from './game-timer.js'
 import { getDomManager } from './domManager.js'
 import { startButton } from './startButton.js'
+import { dectectMobile } from './accelerometer.js'
+import { LEFT, RIGHT, UP, DOWN, WINDOW_ID } from './settings.js';
 
 
 const domManager = getDomManager();
+
+dectectMobile();
 const getKeypressHandler = function (pac, parcours) {
     const func = function () {
         pac.move(event, parcours);
+    }
+    return func;
+}
+
+const getMotionHandler = function (pac, parcours) {
+    let lastInterval = 0;
+    const DELAY = 70;  // msec
+    const func = function () {
+        const motionEvent = {};
+        var aX = event.accelerationIncludingGravity.x * 10;
+        var aY = event.accelerationIncludingGravity.y * 10;
+        var aZ = event.accelerationIncludingGravity.z * 10;
+    
+        const horizontalAxis = ((aX > 0) ? LEFT : RIGHT);
+        const verticalAxis = ((aZ > 90) ? UP : DOWN);
+        
+        lastInterval += event.interval;
+        if (lastInterval > DELAY) {
+            lastInterval = 0;
+            motionEvent.keyCode = horizontalAxis;
+            pac.move(motionEvent, parcours);
+            motionEvent.keyCode = verticalAxis;
+            pac.move(motionEvent, parcours);
+        } 
     }
     return func;
 }
@@ -42,6 +70,7 @@ const boardLoader = function() {
         let newTimer = true;
         let gameTimerStartingTime = 0;
 
+        pac.gameStarted();
         if (gameLevel > 1) {
             if (pac.isPacAlive()) {
                 // add beast
@@ -77,9 +106,17 @@ const boardLoader = function() {
         }
         pac.startGameTimer(setGameTimer, gameTimerStartingTime);
 
-        const keypressHandler = getKeypressHandler(pac, parcours);
-        domManager.addEventListener("keydown", keypressHandler);
-        pac.saveKeyDownEventHandler("keydown", keypressHandler);
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            const motionHandler = getMotionHandler(pac, parcours);
+            domManager.addEventListener("devicemotion", motionHandler, WINDOW_ID);
+            // window.addEventListener("devicemotion", motionHandler, true);
+            pac.saveKeyDownEventHandler("devicemotion", motionHandler);
+        }
+        else {
+            const keypressHandler = getKeypressHandler(pac, parcours);
+            domManager.addEventListener("keydown", motionHandler);
+            pac.saveKeyDownEventHandler("keydown", keypressHandler);
+        }
     }
 }
 
