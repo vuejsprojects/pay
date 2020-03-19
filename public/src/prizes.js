@@ -37,7 +37,7 @@ const prizes = function(context) {
 
     const prizesSet = {
         location: [],
-        sherries: image('src/images/2Sherries.png'),
+        // TODO delete sherries: image('src/images/2Sherries.png'),
         isHorizontal: function(line) {
             return (line.end.x - line.start.x) ? true : false;
         },
@@ -92,7 +92,7 @@ const prizes = function(context) {
                 // context.fillStyle = prize.color;
                 // context.arc(prize.point.getX(), prize.point.getY(), PAC_WIDTH / 2, 0, 2 * Math.PI);
                 // context.fill();
-                console.log('Draw cherries');
+                console.log('Draw ', prize.image.getAttribute("id"));
                 context.drawImage(prize.image, prize.point.getX() -10, prize.point.getY()-10);
                 context.closePath();        
             });
