@@ -10,6 +10,13 @@ import { startButton } from './startButton.js'
 import { getImagePromises, attachImagesToDiv } from './images.js';
 import { setMotionEventHandler} from './motionEventHandler.js'
 
+(function() {
+    // lock screen orientation to portrait in theory
+    if ('orientation' in screen) {
+        screen.orientation.lock("portrait-primary");
+    }
+})();
+
 const domManager = getDomManager();
 
 const start = Date.now();
