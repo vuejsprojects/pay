@@ -15,11 +15,14 @@ const getCanvas = function (domManager) {
         this.canvas = domManager.createCanvas( 'board', 'board-game');
         this.canvas.width = CANVAS_WIDTH;
         this.canvas.height = CANVAS_HEIGHT;
+        // this.canvas.style.width = CANVAS_WIDTH * 2;
+        // this.canvas.style.height = CANVAS_HEIGHT * 2;
         this.context = this.canvas.getContext("2d");
         this.context.fillStyle = BACKGROUND;
         this.context.fillRect(CANVAS_WIDTH_ORIG, CANVAS_HEIGHT_ORIG, CANVAS_WIDTH, CANVAS_HEIGHT);
         this.context.lineWidth = LINE_WIDTH;
         this.context.strokeStyle = LINE_COLOR;
+        // this.context.scale(2, 2);
         return this.context;
     };
     canvas.redrawBackground = function() {

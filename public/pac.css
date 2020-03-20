@@ -2,11 +2,20 @@
     display: none;
 }
 
+
+
+body {
+    background: pink;
+}
+
 .c-pacoman {
     text-align: center;
-    margin-right: 30%;
-    margin-left: 10%;
-    background-color: black;
+
+    background-color: lightblue;
+}
+canvas {
+    width: 800;
+    height: 800;
 }
 
 .c-game {
@@ -14,13 +23,15 @@
     padding-bottom: 20px;
     display: grid;
     height: 600px;
+    width: 100%;
     grid-gap: 10px;
-    grid-template-columns:  400px auto ;
-    grid-template-rows: 100px auto auto auto auto;
+    grid-template-columns:  auto ;
+    grid-template-rows: 50px auto auto auto auto;
 }
+
 .c-intro {
     grid-column-start: 1;
-    grid-column-end: 3;
+    grid-column-end: 2;
     grid-row-start: 1;
     grid-row-end: 2;
     background-color: rgb(235, 232, 107);
@@ -30,14 +41,15 @@
     grid-column-start: 1;
     grid-column-end: 2;
     grid-row-start: 2;
-    grid-row-end: 5;
-    background-color: aqua;
-  }
+    grid-row-end: 3;
+    background-color: darkblue;
+}
+
 .c-start {
     grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 5;
-    grid-row-end: 6;
+    grid-column-end: 2;
+    grid-row-start: 4;
+    grid-row-end: 5;
     background-color: aqua;
 }
 
@@ -54,40 +66,83 @@
     color: white;
 }
 
-.c-time {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: 2;
-    grid-row-end: 3;
+.c-score {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 4;
     background-color: rgb(255, 196, 0);
-    text-align: left;
+    /* text-align: left;*/
     /*justify-self: start;*/
 }
 
-.c-points {
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 3;
-    grid-row-end: 4;
-    background-color: rgb(200, 151, 228);
-    justify-self: start;
-}
 
-.c-level {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: 4;
-    grid-row-end: 5;
-    background-color: aqua;
-    justify-self: start;
-}
-
-.c-accel {
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 3;
-    grid-row-end: 4;
-    background-color: rgb(200, 151, 228);
-    text-align: left;
-}
+@media screen and (min-device-width: 1920px) and (-webkit-min-device-pixel-ratio: 1){
+    /* https://www.mydevice.io/#compare-devices */
+    .c-pacoman {
+        text-align: center;
+        margin-right: 30%;
+        margin-left: 10%;
+        background-color: purple;
+    }
+    canvas {
+        width: 400;
+        height: 400;
+    }
+    .c-game {
+        border: solid;
+        padding-bottom: 20px;
+        display: grid;
+        height: 600px;
+        grid-gap: 10px;
+        grid-template-columns:  auto auto ;
+        grid-template-rows: 100px auto auto auto auto;
+    }
+    .c-intro {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 1;
+        grid-row-end: 2;
+        background-color: rgb(235, 232, 107);
+    }
+    
+    .c-board {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 5;
+        background-color: aqua;
+      }
+    .c-start {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 5;
+        grid-row-end: 6;
+        background-color: aqua;
+    }
+    
+    .c-button {
+        font-size: 24px;
+        padding: 32px 16px;
+        border-radius: 12px;
+        background-color: rgb(61, 150, 49);
+        transition-duration: 0.4s;
+    }
+    
+    .c-button:hover {
+        background-color: #4CAF50; /* Green */
+        color: white;
+    }
+    
+    .c-score {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        background-color: rgb(255, 196, 0);
+        text-align: left;
+        /*justify-self: start;*/
+    }
+    
+  }
 
