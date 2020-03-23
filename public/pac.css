@@ -59,11 +59,12 @@ canvas {
     border-radius: 12px;
     background-color: rgb(61, 150, 49);
     transition-duration: 0.4s;
+    color: white;
 }
 
 .c-button:hover {
     background-color: #4CAF50; /* Green */
-    color: white;
+    color: black;
 }
 
 .c-score {

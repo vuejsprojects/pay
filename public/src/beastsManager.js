@@ -1,7 +1,7 @@
 import { getBeast } from './beast.js';
 
 
-const getBeastsManager = function() {
+const getBeastsManager = function(gameManager) {
     const beastsManager = {
         beasts: [
         ]
@@ -9,6 +9,7 @@ const getBeastsManager = function() {
 
     beastsManager.addBeast = function(context, prizesSet, pac, parcours) {
         const beast = getBeast(context, prizesSet, pac)
+        beast.setGameManager(gameManager);
         beast.chooseLine(parcours);
         beast.iAmBeast();
         beast.initialPosition(beast.fromUpperLeftCorner(beast.walkingLine.start));

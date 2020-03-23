@@ -32,16 +32,16 @@ const getMotionHandler = function (pac, parcours) {
     return func;
 }
 
-const setMotionEventHandler = function(domManager, pac, parcours) {
+const setMotionEventHandler = function(domManager, gameManager, pac, parcours) {
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         const motionHandler = getMotionHandler(pac, parcours);
         domManager.addEventListener("devicemotion", motionHandler, WINDOW_ID);
-        pac.saveKeyDownEventHandler("devicemotion", motionHandler);
+        gameManager.saveKeyDownEventHandler("devicemotion", motionHandler);
     }
     else {
         const keypressHandler = getKeypressHandler(pac, parcours);
         domManager.addEventListener("keydown", keypressHandler);
-        pac.saveKeyDownEventHandler("keydown", keypressHandler);
+        gameManager.saveKeyDownEventHandler("keydown", keypressHandler);
     }
 
 }

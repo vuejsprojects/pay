@@ -4,7 +4,7 @@ import {
     INC
 } from './settings.js'
 
-const prizes = function(context) {
+const prizes = function(context, gameManager) {
     const colors = ['yellow', 'DarkTurquoise', 'blue'];
     const images = [
         document.getElementById('sherries'),
