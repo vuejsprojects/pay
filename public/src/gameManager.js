@@ -17,6 +17,12 @@ const getGameManager = function(context) {
         won: sound("src/sounds/won_subdued.mp3"),
         beastsManager: undefined,
 
+        setBeastsManager: function(beastsManager) {
+            this.beastsManager = beastsManager;
+        },
+        canPopupPrizesBeastsAlive: function() {
+            return this.beastsManager.areBeastsActive();
+        },
 
         // 1
         displayCounter: function() {

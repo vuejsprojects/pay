@@ -95,7 +95,7 @@ const prizes = function(context, gameManager) {
         },
         pickPrizeAndDisplay: function(that) {
             return function () {
-                if (gameManager.isGameOn()) {
+                if (gameManager.isGameOn() && gameManager.canPopupPrizesBeastsAlive()) {
                     if (that.stillPrizesToDisplay()) {
                         that.displayPrize(that.pickPrize());
                     }
@@ -126,6 +126,9 @@ const prizes = function(context, gameManager) {
                     return this.bag.location[n];
                 }
             }
+        },
+        stopRandomTimeDisplay: function() {
+            clearInterval(this.pickAndDisplayTimer);
         },
         isPrizeLocation: function(x, y, beast) {
             for (let i = 0; i < this.bag.location.length; i++) {

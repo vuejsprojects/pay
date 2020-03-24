@@ -10,6 +10,8 @@ import { startButton } from './startButton.js'
 import { getImagePromises, attachImagesToDiv } from './images.js';
 import { setMotionEventHandler} from './motionEventHandler.js';
 import { getGameManager } from './gameManager.js';
+import { dots } from './dots.js';
+
 
 (function() {
     // lock screen orientation to portrait in theory
@@ -36,20 +38,25 @@ Promise.all(getImagePromises()).then(arImages => {
     const gameManager = getGameManager(context);
 
     const prizesSet = prizes(context, gameManager);
+    const dotsSet = dots(context, gameManager);
 
-    const pac = getPac(context, prizesSet);
+    const pac = getPac(context, prizesSet, dotsSet);
 
     parcours.build();
     parcours.display(context);
 
+    dotsSet.sprinkle(parcours).display();
+
     const beastsManager = getBeastsManager(gameManager);
-    beastsManager.addBeast(context, prizesSet, pac, parcours);
+    beastsManager.addBeast(context, prizesSet, dotsSet, pac, parcours);
     pac.setBeastsManager(beastsManager);
 
     pac.setGameManager(gameManager);
     pac.initialPosition(CANVAS_CENTER);
 
     prizesSet.sprinkle(parcours).randomTimeDisplay();
+
+    gameManager.setBeastsManager(beastsManager);
 
     const boardLoader = function() {
         let gameLevel = 0;
@@ -64,14 +71,14 @@ Promise.all(getImagePromises()).then(arImages => {
             if (gameLevel > 1) {
                 if (pac.isPacAlive()) {
                     // add beast
-                    beastsManager.addBeast(context, prizesSet, pac, parcours);
+                    beastsManager.addBeast(context, prizesSet, dotsSet, pac, parcours);
                     // elapsed time should not start from 0
                     isNewGameTimer = false;
                 }
                 else {
                     gameLevel = 1;
                     beastsManager.removeBeasts();
-                    beastsManager.addBeast(context, prizesSet, pac, parcours);
+                    beastsManager.addBeast(context, prizesSet, dotsSet, pac, parcours);
                     gameManager.resetCounter();
                     isNewGameTimer = true;
                 }
@@ -81,6 +88,7 @@ Promise.all(getImagePromises()).then(arImages => {
                 parcours.display(context);
                 // reactivate prizes
                 prizesSet.display();
+                dotsSet.display();
                 pac.reactivatePac();
                 gameManager.displayCounter();
             }

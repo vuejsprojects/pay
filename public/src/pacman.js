@@ -29,7 +29,7 @@ const domMgr = getDomManager();
 //
 // getPac is called by beast as well in this case it need a reference to pac
 //
-const getPac = function (context, prizes, pac) {
+const getPac = function (context, prizes, dots, pac) {
     const openMouthimages = {};
     openMouthimages[UP] = [domMgr.getElementById('up'), domMgr.getElementById('up-red')];
     openMouthimages[DOWN] = [domMgr.getElementById('down'), domMgr.getElementById('down-red')];
@@ -189,27 +189,8 @@ const getPac = function (context, prizes, pac) {
                 this.drawPreviousPosition();
                 // TODO why previousPos
                 const relativePosition = getRelativePosition({posX: this.prevPosX, posY: this.prevPosY});
-                const prizeIndex = prizes.isPrizeLocation(relativePosition.posX, relativePosition.posY, this.isBeast());
-                if (prizeIndex !== undefined) {
-                    if( this.isBeast()) {
-                        prizes.redrawPrize(prizeIndex);
-                    }
-                    else {
-                        this.crunch.play();
-                        this.gameManager.incrementCounter(5);
-                        if (prizes.areAllLocationsInactive() && !this.isBeast()) {
-                            this.gameWon();
-                        }
-                        else {
-                            this.acquireSpecialPower();
-                            this.color = BOOST_COLOR;
-                            if (this.powerTimeout) {
-                                clearTimeout(this.powerTimeout);
-                            }
-                            this.powerTimeout = setTimeout(this.prepareEndOfSpecialPower(), 10000);
-                        }
-                    }
-                }
+                this.checkIfOnThePrize(relativePosition.posX, relativePosition.posY, this.isBeast());
+                this.checkIfOnTheDot(relativePosition.posX, relativePosition.posY);
             }
 
             if (this.isBeast()){
@@ -240,6 +221,44 @@ const getPac = function (context, prizes, pac) {
             }
 
             this.drawCurrentPosition(direction)
+        },
+        checkIfOnThePrize: function(x, y, isBeast) {
+            const prizeIndex = prizes.isPrizeLocation(x, y, isBeast);
+            if (prizeIndex !== undefined) {
+                if (isBeast) {
+                    prizes.redrawPrize(prizeIndex);
+                }
+                else {
+                    this.crunch.play();
+                    this.gameManager.incrementCounter(5);
+                    // if (prizes.areAllLocationsInactive() && !this.isBeast()) {
+                    //     this.gameWon();
+                    // }
+                    // else {
+                        this.acquireSpecialPower();
+                        this.color = BOOST_COLOR;
+                        if (this.powerTimeout) {
+                            clearTimeout(this.powerTimeout);
+                        }
+                        this.powerTimeout = setTimeout(this.prepareEndOfSpecialPower(), 10000);
+                    // }
+                }
+            }
+
+        },
+        checkIfOnTheDot: function(x, y) {
+            const dotIndex = dots.isDotLocation(x, y, this.isBeast());
+            if (dotIndex !== undefined) {
+                if( this.isBeast()) {
+                    dots.redrawDot(dotIndex);
+                }
+                else {
+                    this.gameManager.incrementCounter(1);
+                    if (dots.areAllLocationsInactive() && !this.isBeast()) {
+                        this.gameWon();
+                    }
+                }
+            }
         },
         drawCurrentPosition: function(direction) {
             const x = this.posX;

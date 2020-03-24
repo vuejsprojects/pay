@@ -41,7 +41,9 @@ export const IMAGES = [
     {id: "full", src: 'src/images/full.png'},
     {id: "full-red", src: 'src/images/full-red.png'},
 
-    {id: "beast", src: 'src/images/beast.png'}
+    {id: "beast", src: 'src/images/beast.png'},
+
+    {id: "dot", src: 'src/images/dot.png'}
 ];
 
 

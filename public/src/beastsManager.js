@@ -7,8 +7,8 @@ const getBeastsManager = function(gameManager) {
         ]
     };
 
-    beastsManager.addBeast = function(context, prizesSet, pac, parcours) {
-        const beast = getBeast(context, prizesSet, pac)
+    beastsManager.addBeast = function(context, prizesSet, dotsSet, pac, parcours) {
+        const beast = getBeast(context, prizesSet, dotsSet, pac)
         beast.setGameManager(gameManager);
         beast.chooseLine(parcours);
         beast.iAmBeast();
@@ -38,10 +38,18 @@ const getBeastsManager = function(gameManager) {
                 return this.beasts[i];
             }
         }
-    }
+    };
     beastsManager.removeBeasts = function() {
         this.beasts.splice(0, this.beasts.length);
-    }
+    };
+    beastsManager.areBeastsActive = function() {
+        for (let i = 0; i < this.beasts.length; i++) {
+            if (this.beasts[i].isBeastActive()) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     return beastsManager;
 }
