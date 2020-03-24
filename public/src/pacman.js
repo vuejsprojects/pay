@@ -18,12 +18,10 @@ import {
     LINE_WIDTH,
     LINE_COLOR,
     ARC,
-    BOOST_COLOR,
-    GAME_OVER_COLOR
+    BOOST_COLOR
 } from './settings.js';
 import { CANVAS_CENTER } from './point.js';
 import { getDomManager } from './domManager.js'
-// import { startButton } from './startButton.js'
 import { sound } from './sound.js'
 
 
@@ -119,32 +117,6 @@ const getPac = function (context, prizes, pac) {
         return center
     };
 
-    // const sound = function (src) {
-    //     const audio = document.createElement("audio");
-    //     audio.src = src;
-    //     audio.setAttribute("preload", "auto");
-    //     audio.setAttribute("controls", "none");
-    //     audio.setAttribute("muted", "muted");
-    //     audio.style.display = "none";
-    //     document.body.appendChild(audio);
-    //     return {
-    //         play: function(){
-    //             console.log('Playing: ', audio.src);
-    //             try {
-    //                 audio.play();
-    //             }
-    //             catch(e) {
-    //                 // swallow: Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first
-    //                 console.log('Exception in play: ',e);
-    //             }
-    //         },
-    //         stop: function(){
-    //             audio.pause();
-    //         }
-    //     };
-    // };
-    
-
     return {
         LEFT: LEFT,
         RIGHT: RIGHT,
@@ -158,7 +130,6 @@ const getPac = function (context, prizes, pac) {
         color: PAC_COLOR,
         myShape: ARC,
         specialPower: false,
-        // counter: 0,  // TODO mode to gameManager
         pacAlive: true,
         openMouth: false,
         powerTimeout: undefined,
@@ -167,10 +138,8 @@ const getPac = function (context, prizes, pac) {
         roundOver: false,
         gameStarted: false,
         beep: sound("src/sounds/hyper_short_beep.mp3"),
-        // reaper: sound("src/sounds/reaper.mp3"),
         crunch: sound("src/sounds/short_crunch.mp3"),
         bell: sound("src/sounds/bell.mp3"),
-//        won: sound("src/sounds/won_subdued.mp3"),
         one_less_beast: sound("src/sounds/one_less_beast.mp3"),
 
         iAmBeast: function() {
@@ -338,81 +307,18 @@ const getPac = function (context, prizes, pac) {
             this.drawCurrentPosition(UP);
             this.specialPower = false;
         },
-        //TODO move to gameManager (1)
-        // displayCounter: function() {
-        //     domMgr.setValue('counter', this.counter);
-        // },
-        // incrementCounter: function(inc) {
-        //     this.counter += inc;
-        //     this.displayCounter();
-        // },
-        // resetCounter: function() {
-        //     this.counter = 0;
-        //     this.displayCounter();
-        // },
         gameOver: function() {
-            // this.reaper.play();
-            // this.displayGameOverMessage();
-            // this.stopGame();
             this.deactivatePac(); 
-            // this.setStartButtonTo('Start New Game');
-            //this.setRoundOver();
             this.gameManager.gameOver();
         },
         gameWon:  function() {
-            // this.won.play();
-            // this.displayGameWonMessage();
-            // this.stopGame();
             this.closeMouth();
             this.endOfSpecialPower();
-            // this.setStartButtonTo('Next Level');
-            // this.setRoundOver();
             this.gameManager.gameWon();
         },
-        // stopGame: function() {
-        //     this.stopBeastTimer();
-        //     this.stopCapturingPacMotion();
-        //     this.stopGameTimer();
-        // },
-        // setStartButtonTo: function(label) {
-        //     startButton.enable();
-        //     startButton.setValue(label);
-        // },
-        // displayGameOverMessage: function() {
-        //     context.font = '48px serif';
-        //     context.fillStyle = GAME_OVER_COLOR;
-        //     context.fillText('Game Over!!!!', 10, CANVAS_HEIGHT_ORIG + (CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG)/2);
-        // },
-        // displayGameWonMessage: function() {
-        //     context.font = '48px serif';
-        //     context.fillStyle = GAME_OVER_COLOR;
-        //     context.fillText('Bravo!!!!', 10, CANVAS_HEIGHT_ORIG + (CANVAS_HEIGHT - CANVAS_HEIGHT_ORIG)/2);
-        // },
-        // startBeastTimer: function(beastTimer) {
-        //     this.beastSetInterval = beastTimer();
-        // },
-        // stopBeastTimer: function() {
-        //     clearInterval(this.beastSetInterval);
-        // },
-        // startGameTimer: function(setGameTimer, from) {
-        //     this.gameTimer = setGameTimer(from);
-        // },
-        // stopGameTimer: function() {
-        //     clearInterval(this.gameTimer);
-        // },
-        // saveKeyDownEventHandler: function(event, keypressHandler) {
-        //     this.capturedEvent = event;
-        //     this.eventHandler = keypressHandler;
-        // },
-        // TODO end of move to gameManager (1)
         deactivatePac: function() {
             this.pacAlive = false;
         },
-        // TODO move to gameManager (2)
-        // stopCapturingPacMotion: function() {
-        //     domMgr.removeEventListener(this.capturedEvent, this.eventHandler);
-        // },
-        // TODO end of move to gameManager (2)
         reactivatePac: function() {
             this.pacAlive = true;
             this.initialPosition(CANVAS_CENTER);
@@ -423,28 +329,9 @@ const getPac = function (context, prizes, pac) {
         makeSound: function() {
             this.beep.play();
         },
-        // TODO move to gameManager (3)
-        // setRoundOver: function() {
-        //     this.roundOver = true;
-        // },
-        // resetRoundOver: function() {
-        //     this.roundOver = false;
-        // },
-        // isRoundOver: function() {
-        //     return this.roundOver;
-        // },
-        // TODO end of move to gameManager (3)
         closeMouth : function() {
             this.openMouth = false;
         },
-        // TODO move to gameManager (4)
-        // setGameStarted : function() {
-        //     this.gameStarted = true;
-        // },
-        // isGameStarted : function() {
-        //     return this.gameStarted;
-        // }
-        // TODO end of move to gameManager (4)
     }
 }
 

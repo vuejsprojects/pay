@@ -49,7 +49,7 @@ Promise.all(getImagePromises()).then(arImages => {
     pac.setGameManager(gameManager);
     pac.initialPosition(CANVAS_CENTER);
 
-    prizesSet.sprinkle(parcours).display();
+    prizesSet.sprinkle(parcours).randomTimeDisplay();
 
     const boardLoader = function() {
         let gameLevel = 0;

@@ -99,6 +99,9 @@ const getGameManager = function(context) {
         },
         isGameStarted : function() {
             return this.gameStarted;
+        },
+        isGameOn: function() {
+            return this.gameStarted === true && this.roundOver === false
         }
 
 

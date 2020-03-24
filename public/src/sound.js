@@ -9,7 +9,7 @@ const sound = function (src) {
     document.body.appendChild(audio);
     return {
         play: function () {
-            console.log('Playing: ', audio.src);
+            // console.log('Playing: ', audio.src);
             try {
                 audio.play();
             }
