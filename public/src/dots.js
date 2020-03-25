@@ -114,7 +114,7 @@ const dots = function (context, gameManager) {
                     y === this.bag.location[i].point.y ) {
 
                     if (!beast) {
-                        console.log('Inactivating dot[', i,'] on x:y', x, ':', y)
+                        // console.log('Inactivating dot[', i,'] on x:y', x, ':', y)
                         this.bag.location[i].active = false;
                     }
                     return i;
@@ -131,7 +131,7 @@ const dots = function (context, gameManager) {
         areAllLocationsInactive: function() {
             for (let i = 0; i < this.bag.location.length; i++) {
                 if (this.bag.location[i].active) {
-                    console.log('Dot inactive: ', i)
+                    // console.log('Dot inactive: ', i)
                     return false;
                 }
             }

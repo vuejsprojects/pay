@@ -87,8 +87,8 @@ Promise.all(getImagePromises()).then(arImages => {
                 canvas.redrawBackground();
                 parcours.display(context);
                 // reactivate prizes
-                prizesSet.display();
                 dotsSet.display();
+                prizesSet.display();
                 pac.reactivatePac();
                 gameManager.displayCounter();
             }
