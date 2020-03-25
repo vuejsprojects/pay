@@ -11,7 +11,8 @@ const dots = function (context, gameManager) {
 
     const dotSet = {
         bag: {
-            location: []
+            location: [],
+            locationMap: new Map()
         },
 
         isHorizontal: function (line) {
@@ -27,49 +28,18 @@ const dots = function (context, gameManager) {
                 }
 
             }
-            // TODO clen that up
-            for (let i=0; i < this.bag.location.length; i++ ) {
-                console.log(i, ': ',
-                    this.bag.location[i].point.getX(),
-                    ', ',  
-                    this.bag.location[i].point.getY());
-            }
-            for (let i=0; i < this.bag.location.length; i++ ) {
-                if (this.bag.location[i].active) {
-                    for (let j=i+1; j < this.bag.location.length; j++ ) {
-                        if (this.bag.location[j].active) {
-                            if (this.bag.location[i].point.getX() === this.bag.location[j].point.getX() &&
-                            this.bag.location[i].point.getY() === this.bag.location[j].point.getY()) {
-                                console.log(i,' = ',j);
-                                this.bag.location[j].active = false;
-                                this.bag.location[j].duplicate = true;
-                            }
-                        }
-                    }
-                    this.bag.location[i].active = false;
-                }
-            }
-            const removeDuplicate = function(location) {
-                for (let i=0; i < location.length; i++ ) {
-                    if (location[i].duplicate === true) {
-                        location.splice(i, 1);
-                        removeDuplicate(location);
-                    }
-                }
-            }
-            removeDuplicate(this.bag.location);
-            console.log('New length: ', this.bag.location.length);
-            for (let i=0; i < this.bag.location.length; i++ ) {
-                this.bag.location[i].active = true;
-            }
 
+            for (let val of this.bag.locationMap.values()) {
+                this.bag.location.push(val);
+            }
             return this;
         },
         addDots: function(every, line, direction) {
             if (direction === HORIZONTAL) {
                 const l = this.getStartEnd(line.start.x, line.end.x);
                 for (let where = l.start; where < l.end; where += every) {
-                    this.bag.location.push(
+                    this.bag.locationMap.set(
+                        where.toString()+":"+line.start.y.toString(),
                         {
                             point: point( where, line.start.y),
                             line: line,
@@ -82,7 +52,8 @@ const dots = function (context, gameManager) {
             else {
                 const l = this.getStartEnd(line.start.y, line.end.y);
                 for (let where = l.start; where < l.end; where += every) {
-                    this.bag.location.push(
+                    this.bag.locationMap.set(
+                        line.start.x.toString()+":"+where.toString(),
                         {
                             point: point(line.start.x, where),
                             line: line,
