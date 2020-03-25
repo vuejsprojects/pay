@@ -5,7 +5,7 @@
 
 
 body {
-    background: pink;
+    background: white;
 }
 
 .c-pacoman {
@@ -34,7 +34,7 @@ canvas {
     grid-column-end: 2;
     grid-row-start: 1;
     grid-row-end: 2;
-    background-color: rgb(235, 232, 107);
+    background-color: #E4C580;
 }
 
 .c-board {
@@ -50,21 +50,21 @@ canvas {
     grid-column-end: 2;
     grid-row-start: 4;
     grid-row-end: 5;
-    background-color: aqua;
+    background-color: #E4C580;
 }
 
 .c-button {
     font-size: 24px;
     padding: 32px 16px;
     border-radius: 12px;
-    background-color: rgb(61, 150, 49);
+    background-color: #080F5B;
     transition-duration: 0.4s;
     color: white;
 }
 
 .c-button:hover {
-    background-color: #4CAF50; /* Green */
-    color: black;
+    background-color: #0D19A3; /* Green */
+    color: white;
 }
 
 .c-score {
@@ -84,7 +84,7 @@ canvas {
         text-align: center;
         margin-right: 30%;
         margin-left: 10%;
-        background-color: purple;
+        background-color: #F4E4C1;
     }
     canvas {
         width: 400;
@@ -104,7 +104,7 @@ canvas {
         grid-column-end: 3;
         grid-row-start: 1;
         grid-row-end: 2;
-        background-color: rgb(235, 232, 107);
+        background-color: #E4C580;
     }
     
     .c-board {
@@ -119,19 +119,19 @@ canvas {
         grid-column-end: 3;
         grid-row-start: 5;
         grid-row-end: 6;
-        background-color: aqua;
+        background-color: #E4C580;
     }
     
     .c-button {
         font-size: 24px;
         padding: 32px 16px;
         border-radius: 12px;
-        background-color: rgb(61, 150, 49);
+        background-color:#080F5B;
         transition-duration: 0.4s;
     }
     
     .c-button:hover {
-        background-color: #4CAF50; /* Green */
+        background-color:#0D19A3; /* Green */
         color: white;
     }
     
