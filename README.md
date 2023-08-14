@@ -12,6 +12,8 @@ The JS scripts were written as modules which means the JS needs to be packed tog
 I believe at the time I wrote it using the VueJS plateform (but I could be wrong) and therefore it was built automatically with WebPack.
 
 ### Manual build without WebPack ad Deployment
+
+Read this [WebPack Getting Started](https://webpack.js.org/guides/getting-started/) manual.
  
  #### Install WebPack
  In the root folder
